@@ -1,0 +1,15 @@
+{% extends "global/Base.html" %}
+{% load staticfiles otree_tags %}
+
+{% block title %}
+    Mon entité
+{% endblock %}
+
+{% block content %}
+
+    <p>
+        {% formfield player.my_entity %}
+        {% next_button %}
+    </p>
+
+{% endblock %}

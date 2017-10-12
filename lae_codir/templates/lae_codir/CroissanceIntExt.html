@@ -1,0 +1,144 @@
+{% extends "global/Base.html" %}
+{% load staticfiles otree_tags %}
+
+{% block title %}
+    Croissance externe vs. Croissance interne
+{% endblock %}
+
+{% block content %}
+    <p>
+        <div>
+            Une autre façon de stimuler la croissance de la recherche est de dégager du temps disponible utile
+            pour les enseignants-chercheurs déjà en poste. Considérons que les salariés effectuent une charge
+            d’heures de face à face annuelle (HFF) de 240 heures. Chaque responsable d’entité peut décider de
+            mettre en place des ½ services d’enseignement (120 heures), mais cela a un coût, qui réduira le
+            nombre d’embauches. Ce coût correspond au paiement des enseignants vacataires qui se substituent
+            aux enseignants-chercheurs permanents. On suppose qu’une heure d’enseignement externalisée auprès
+            d’un vacataire coûte 75€.<br>
+            Pour choisir la combinaison qui vous semble préférable, veuillez cliquer <a id="id_enterCroissance"><b>'ICI'</b></a>.<br>
+        </div>
+    </p>
+    <br><br><br>
+    <p>
+        <div id="container" style="min-width: 310px; height: 400px; margin: 0 auto; visibility: hidden;"></div>
+        <div id="id_confirmation" style="visibility:hidden;">
+            <span>Cliquez sur "suivant" pour confirmer votre choix: </span>
+                <span id="id_chosenCoutVacation" style="font-size:24px;"></span>
+                <span> € de coût vacations pour une charge HFF de: </span>
+                <span id="id_chosenHFF" style="font-size:24px;"></span>
+                <span> heures de face-à-face par an.</span>
+            {% next_button %}
+        </div>
+    </p>
+
+    <input type="hidden" name="cout_vacation_avec_hff" id="id_cout_vacation_avec_hff"/>
+    <input type="hidden" name="hff" id="id_hff"/>
+{% endblock %}
+
+{% block styles %}
+    <!-- define a style -->
+    <!-- or reference a static file -->
+    <link rel="stylesheet" type="text/css" href="https://www.highcharts.com/samples/static/highslide.css" />
+{% endblock %}
+
+
+{% block scripts %}
+    <script type="text/javascript" src="{% static "lae_codir/highcharts/highcharts.js" %}"></script>
+    <script type="text/javascript" src="{% static "lae_codir/highcharts/modules/data.js" %}"></script>
+    <script type="text/javascript" src="{% static "lae_codir/highcharts/modules/exporting.js" %}"></script>
+
+    <script type="text/javascript">
+    $("#id_enterCroissance").click(function() {
+        if (document.getElementById("container").style.visibility == 'visible')
+        {
+            document.getElementById("container").style = "visibility:hidden;";
+            document.getElementById("id_confirmation").style = "visibility:hidden;";
+        }
+        else
+        {
+            document.getElementById("container").style = "visibility:visible;";
+            document.getElementById("id_confirmation").style = "visibility:visible;";
+        }
+    });
+    </script>
+
+    <script>
+    $(function () {
+        $('#container').highcharts({
+            series: [{
+                name: "Décharge temps / Coût vacation",
+                data: {{ dataToBePlotted }}
+                }
+            ],
+            title: {
+                text: "Coût vacations en fonction de la décharge temps HFF"
+            },
+            subtitle: {
+                text: 'Cliquez sur le trade-off que vous désirez sélectionner'
+            },
+            xAxis: {
+                title: {
+                    text: "HFF (en heures/an)"
+                },
+                tickInterval: 10,
+                tickWidth: 1,
+                gridLineWidth: 1,
+                labels: {
+                    align: 'left',
+                    x: 3,
+                    y: -3
+                }
+            },
+            yAxis: [{ // left y axis
+                    title: {
+                        text: "Coût vacations"
+                    },
+                    labels: {
+                        align: 'left',
+                        x: 3,
+                        y: 16,
+                        format: '{value:.,0f}'
+                    },
+                    showFirstLabel: false
+                },
+            ],
+
+            legend: {
+                align: 'left',
+                verticalAlign: 'top',
+                y: 20,
+                floating: true,
+                borderWidth: 0
+            },
+
+            tooltip: {
+                shared: true,
+                crosshairs: true,
+                formatter: function() {
+                    return 'Je supporte un coût de ' + this.y + ' € pour assurer une charge HFF de ' + this.x + 'heures/an';
+                }
+            },
+
+            plotOptions: {
+                series: {
+                    allowPointSelect: true,
+                    cursor: 'pointer',
+                    point: {
+                        events: {
+                            click: function (e) {
+                                $("#id_hff").val(this.x);
+                                $("#id_chosenHFF").text(this.x);
+                                $("#id_cout_vacation_avec_hff").val(this.y);
+                                $("#id_chosenCoutVacation").text(this.y);
+                            }
+                        }
+                    },
+                    marker: {
+                        lineWidth: 1
+                    }
+                }
+            }
+        });
+    });
+    </script>
+{% endblock %}

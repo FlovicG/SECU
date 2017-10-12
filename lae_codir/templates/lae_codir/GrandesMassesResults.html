@@ -1,0 +1,15 @@
+{% extends "global/Base.html" %}
+{% load staticfiles otree_tags %}
+
+{% block title %}
+    Grandes masses de répartition
+{% endblock %}
+
+{% block content %}
+    <p>
+        A l'issue des différents tours, le nombre total d'embauches annuelles est de: <b>{{group.nb_mcf_total}}</b> MCF/an
+    </p>
+    {% next_button %}
+{% endblock %}
+
+

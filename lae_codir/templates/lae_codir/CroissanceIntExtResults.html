@@ -1,0 +1,135 @@
+{% extends "global/Base.html" %}
+{% load staticfiles otree_tags %}
+
+
+{% block title %}
+    Croissance interne/externe
+{% endblock %}
+
+
+{% block content %}
+
+    <div id="container" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
+    {% next_button %}
+
+{% endblock %}
+
+
+{% block scripts %}
+    <script type="text/javascript" src="{% static "lae_codir/highcharts/highcharts.js" %}"></script>
+    <script type="text/javascript" src="{% static "lae_codir/highcharts/modules/data.js" %}"></script>
+    <script type="text/javascript" src="{% static "lae_codir/highcharts/modules/exporting.js" %}"></script>
+
+    <script>
+    $(function () {
+        $('#container').highcharts({
+            chart: {
+                zoomType: 'xy'
+            },
+            title: {
+                text: 'HFF'
+            },
+            subtitle: {
+                text: 'par entité'
+            },
+            xAxis: [{
+                categories: ['FMM', 'FT', 'FGES', 'FLSH',
+                    'FD', 'Espol', 'Common-Home', 'Anthropo-Lab'],
+                crosshair: true
+            }],
+            yAxis: [{ // Primary yAxis
+                labels: {
+                    format: '{value} heures/an',
+                    style: {
+                        color: Highcharts.getOptions().colors[0]
+                    }
+                },
+                title: {
+                    text: 'HFF',
+                    style: {
+                        color: Highcharts.getOptions().colors[0]
+                    }
+                },
+                plotLines: [{
+                    value: {{group.hff_moyen_icl}},
+                    color: Highcharts.getOptions().colors[0],
+                    width: 2,
+                    label: {
+                        text: 'HFF moyen ICL',
+                        align: 'left',
+                        style: {
+                            color: Highcharts.getOptions().colors[0]
+                        }
+                    }
+                }]
+            }, { // Secondary yAxis
+                title: {
+                    text: 'Coût vacataires par an',
+                    style: {
+                        color: Highcharts.getOptions().colors[1]
+                    }
+                },
+                labels: {
+                    format: '{value} €',
+                    style: {
+                        color: Highcharts.getOptions().colors[1]
+                    }
+                },
+                plotLines: [{
+                    value: {{group.cout_vacation_avec_hff_moyen_icl}},
+                    color: Highcharts.getOptions().colors[1],
+                    width: 2,
+                    label: {
+                        text: 'Coût vacataires moyen ICL',
+                        align: 'right',
+                        style: {
+                            color: Highcharts.getOptions().colors[1]
+                        }
+                    }
+                }],
+                opposite: true
+            }],
+            tooltip: {
+                shared: true
+            },
+            legend: {
+                layout: 'vertical',
+                align: 'left',
+                x: 120,
+                verticalAlign: 'top',
+                y: 0,
+                floating: true,
+                backgroundColor: (Highcharts.theme && Highcharts.theme.legendBackgroundColor) || '#FFFFFF'
+            },
+            series: [
+                {
+                    name: 'HFF',
+                    type: 'column',
+                    data: [
+                        {{group.hff_fmm}}, {{group.hff_ft}}, {{group.hff_fges}},
+                        {{group.hff_flsh}}, {{group.hff_fd}}, {{group.hff_espol}},
+                        {{group.hff_anthropolab}}
+                    ],
+                    tooltip: {
+                        valueSuffix: ' heures/an'
+                    }
+                },
+                {
+                    name: 'Coût vacataires',
+                    type: 'spline',
+                    yAxis: 1,
+                    data: [
+                            {{group.cout_vacation_avec_hff_fmm}}, {{group.cout_vacation_avec_hff_ft}}, {{group.cout_vacation_avec_hff_fges}},
+                            {{group.cout_vacation_avec_hff_flsh}}, {{group.cout_vacation_avec_hff_fd}}, {{group.cout_vacation_avec_hff_espol}},
+                            {{group.cout_vacation_avec_hff_anthropolab}}
+                    ],
+                    tooltip: {
+                        valueSuffix: ' €'
+                    }
+                }
+            ]
+        });
+    });
+    </script>
+
+{% endblock %}

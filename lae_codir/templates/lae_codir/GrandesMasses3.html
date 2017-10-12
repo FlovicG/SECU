@@ -1,0 +1,64 @@
+{% extends "global/Base.html" %}
+{% load staticfiles otree_tags %}
+
+{% block title %}
+    Projection annuelle de développement
+{% endblock %}
+
+
+{% block content %}
+
+
+    <p>
+        <b>ATTENTION : A nouveau, à l'issue du deuxième tour, la somme des demandes  est supérieure à 10.</b><br>
+        Vous aviez choisi au premier tour: <b>{{player.nb_mcf1}}</b> embauche(s) annuelle(s).<br>
+        Vous aviez choisi au deuxième tour: <b>{{player.nb_mcf2}}</b> embauche(s) annuelle(s).<br>
+        Pour entrer votre projection révisée d’embauches annuelles, veuillez cliquer <a id="id_enterNbMCF"><b>'ICI'</b></a>.<br>
+    </p>
+    <p>
+        <div id="nb_mcf3" style="max-width: 800px; margin: 0 auto;  visibility: hidden;"></div>
+        <div id="id_next" style="visibility: hidden;">
+            {% next_button %}
+        </div>
+    </p>
+    <input type="hidden" name="nb_mcf3" id="id_nb_mcf3"/>
+
+{% endblock %}
+
+
+{% block styles %}
+    <!-- define a style -->
+    <!-- or reference a static file -->
+    <link href="{% static "lae_codir/freshslider/freshslider.min.css" %}" rel="stylesheet">
+{% endblock %}
+
+
+{% block scripts %}
+    <script type="text/javascript" src="{% static "lae_codir/freshslider/freshslider.min.js" %}"></script>
+
+    <script type="text/javascript">
+    $("#id_enterNbMCF").click(function() {
+        if (document.getElementById("nb_mcf3").style.visibility == 'visible')
+        {
+            document.getElementById("nb_mcf3").style = "visibility:hidden;";
+            document.getElementById("id_next").style = "visibility:hidden;";
+        }
+        else
+        {
+            document.getElementById("nb_mcf3").style = "visibility:visible;";
+            document.getElementById("id_next").style = "visibility:visible;";
+        }
+    });
+    </script>
+
+    <script>
+        document.getElementById("id_nb_mcf3").value = 0;
+        $("#nb_mcf3").freshslider(
+                {
+                    min: 0, max: 10, step: 1, value:0,
+                    onchange:function(value){document.getElementById("id_nb_mcf3").value = value;}
+                }
+        );
+    </script>
+
+{% endblock %}

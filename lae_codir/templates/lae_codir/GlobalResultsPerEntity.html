@@ -1,0 +1,77 @@
+{% extends "global/Base.html" %}
+{% load staticfiles otree_tags %}
+
+{% block title %}
+    Récapitulatif de la projection pour mon entité
+{% endblock %}
+
+
+{% block content %}
+
+    <p>
+        En résumé, pour votre entité, votre projection est :
+        <ul>
+            <li> <b>{{player.nb_mcffinal}}</b> embauches / an en moyenne </li>
+            <li> Au taux de salaire de <b>{{player.salaire_moyen}}</b> euros </li>
+            <li> Et réalisant une charge d’enseignement en HFF de <b>{{player.hff}}</b> heures </li>
+        </ul>
+        Le coût total annuel est de <b>{{player.cout_total}}</b> euros, sachant que ce coût se propage les années suivantes.
+    </p>
+    <p>
+    <br>
+        <div class="container" style="height: 300px">
+            <div data-force="30" class="layer block" style="alignment: center; top: 0; width: 40%">
+                <div class="layer title">Ordonner les recettes, en les glissant/déposant:<br>De la plus importante en haut, à la moins importante en bas</div>
+                <ul id="foo" class="block__list_words">
+                    <li class="block__list_words" data-id="Nouvelles filières">Nouvelles filières</li>
+                    <li class="block__list_words" data-id="Projets de recherche">Projets de recherche</li>
+                    <li class="block__list_words" data-id="Mecenat">Mecenat</li>
+                    <li class="block__list_words" data-id="Autres">Autres</li>
+                </ul>
+            </div>
+        </div><br><br>
+        {% formfield player.commentaires %}
+    </p>
+    <input type="hidden" name="recettes" id="id_recettes"/>
+    {% next_button %}
+
+{% endblock %}
+
+
+{% block styles %}
+    <!-- define a style -->
+    <!-- or reference a static file -->
+    <link href="{% static "lae_codir/sortable/app.css" %}" rel="stylesheet"></link>
+{% endblock %}
+
+{% block scripts %}
+    <script type="text/javascript" src="{% static "lae_codir/sortable/Sortable.min.js" %}"></script>
+
+    <script type="text/javascript">
+    var el = document.getElementById('foo');
+    var sortableList = Sortable.create(el, {
+        group: "localStorage-example",
+        store: {
+            /**
+             * Get the order of elements. Called once during initialization.
+             * @param   {Sortable}  sortable
+             * @returns {Array}
+             */
+            get: function (sortable) {
+                var order1 = sortable.toArray();
+                $("#id_recettes").val(order1.join('|'));
+                var order = localStorage.getItem(sortable.options.group.name);
+                return order ? order.split('|') : [];
+            },
+            /**
+             * Save the order of elements. Called onEnd (when the item is dropped).
+             * @param {Sortable}  sortable
+             */
+            set: function (sortable) {
+                var order = sortable.toArray();
+                $("#id_recettes").val(order.join('|'));
+            }
+        }
+    });
+    </script>
+{% endblock %}

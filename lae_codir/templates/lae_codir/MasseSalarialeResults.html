@@ -1,0 +1,136 @@
+{% extends "global/Base.html" %}
+{% load staticfiles otree_tags %}
+
+
+{% block title %}
+    Masse salariale
+{% endblock %}
+
+
+{% block content %}
+
+    <div id="container" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
+    {% next_button %}
+
+{% endblock %}
+
+
+{% block scripts %}
+    <script type="text/javascript" src="{% static "lae_codir/highcharts/highcharts.js" %}"></script>
+    <script type="text/javascript" src="{% static "lae_codir/highcharts/modules/data.js" %}"></script>
+    <script type="text/javascript" src="{% static "lae_codir/highcharts/modules/exporting.js" %}"></script>
+
+	
+    <script>
+    $(function () {
+        $('#container').highcharts({
+            chart: {
+                zoomType: 'xy'
+            },
+            title: {
+                text: 'Salaires moyens'
+            },
+            subtitle: {
+                text: 'par entité'
+            },
+            xAxis: [{
+                categories: ['FMM-SanteSocial', 'FT', 'FGES', 'FLSH',
+                    'FD', 'Espol', 'Common-Home', 'Anthropo-Lab'],
+                crosshair: true
+            }],
+            yAxis: [{ // Primary yAxis
+                labels: {
+                    format: '{value} €',
+                    style: {
+                        color: Highcharts.getOptions().colors[0]
+                    }
+                },
+                title: {
+                    text: 'Salaire moyen (en €)',
+                    style: {
+                        color: Highcharts.getOptions().colors[0]
+                    }
+                },
+                plotLines: [{
+                    value: {{group.salaire_moyen_icl}},
+                    color: Highcharts.getOptions().colors[0],
+                    width: 1,
+                    label: {
+                        text: 'Salaire moyen ICL',
+                        align: 'left',
+                        style: {
+                            color: Highcharts.getOptions().colors[0]
+                        }
+                    }
+                }]
+            }, { // Secondary yAxis
+                title: {
+                    text: "Nombre d'embauches",
+                    style: {
+                        color: Highcharts.getOptions().colors[1]
+                    }
+                },
+                labels: {
+                    format: '{value} MCF',
+                    style: {
+                        color: Highcharts.getOptions().colors[1]
+                    }
+                },
+                plotLines: [{
+                    value: {{group.nb_mcf_avec_salaire_moyen_icl}},
+                    color: Highcharts.getOptions().colors[1],
+                    width: 2,
+                    label: {
+                        text: 'Nb MCF moyen ICL',
+                        align: 'right',
+                        style: {
+                            color: Highcharts.getOptions().colors[1]
+                        }
+                    }
+                }],
+                opposite: true
+            }],
+            tooltip: {
+                shared: true
+            },
+            legend: {
+                layout: 'vertical',
+                align: 'left',
+                x: 120,
+                verticalAlign: 'top',
+                y: 0,
+                floating: true,
+                backgroundColor: (Highcharts.theme && Highcharts.theme.legendBackgroundColor) || '#FFFFFF'
+            },
+            series: [
+                {
+                    name: 'Salaire Moyen',
+                    type: 'column',
+                    data: [
+                        {{group.salaire_moyen_fmm}}, {{group.salaire_moyen_ft}}, {{group.salaire_moyen_fges}},
+                        {{group.salaire_moyen_flsh}}, {{group.salaire_moyen_fd}}, {{group.salaire_moyen_espol}},
+                        {{group.salaire_moyen_anthropolab}}
+                    ],
+                    tooltip: {
+                        valueSuffix: ' €'
+                    }
+                },
+                {
+                    name: "Nombre d'embauches",
+                    type: 'spline',
+                    yAxis: 1,
+                    data: [
+                            {{group.nb_mcf_avec_salaire_moyen_fmm}}, {{group.nb_mcf_avec_salaire_moyen_ft}}, {{group.nb_mcf_avec_salaire_moyen_fges}},
+                            {{group.nb_mcf_avec_salaire_moyen_flsh}}, {{group.nb_mcf_avec_salaire_moyen_fd}}, {{group.nb_mcf_avec_salaire_moyen_espol}},
+                            {{group.nb_mcf_avec_salaire_moyen_anthropolab}}
+                    ],
+                    tooltip: {
+                        valueSuffix: ' MCF'
+                    }
+                }
+            ]
+        });
+    });
+    </script>
+
+{% endblock %}

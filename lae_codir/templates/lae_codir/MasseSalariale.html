@@ -1,0 +1,138 @@
+{% extends "global/Base.html" %}
+{% load staticfiles otree_tags %}
+
+{% block title %}
+    Détermination de l’effort salarial
+{% endblock %}
+
+{% block content %}
+    <p>
+        <div>
+            Considérons, à présent, qu’il soit possible de rémunérer un peu mieux les enseignants-chercheurs.
+            Pour fixer les idées, 10 postes de MCF correspondent à un coût total chargé d’environ 10 X 47 000€ / an,
+            soient 470 000€ / an, soient 2 350 000€ pour une période de 5 ans.<br>
+            La contrepartie d’une telle stratégie est que la possibilité de ce surplus salarial réduit
+            les possibilités d’embauche. La figure ci-dessous illustre les combinaisons théoriquement
+            envisageables (à masse salariale constante).<br>
+            Pour choisir la combinaison qui vous semble préférable, veuillez cliquer <a id="id_enterMasse"><b>'ICI'</b></a>.<br>
+        </div>
+    </p>
+    <br><br><br>
+    <p>
+        <div id="container" style="min-width: 310px; height: 400px; margin: 0 auto; visibility: hidden;"></div>
+        <div id="id_confirmation" style="visibility:hidden;">
+            <span>Cliquez sur "suivant" pour confirmer votre choix: </span>
+                <span id="id_chosenNumberOfMCF" style="font-size:24px;"></span>
+                <span> MCF pour un salaire moyen de: </span>
+                <span id="id_chosenSalary" style="font-size:24px;"></span>
+                <span> € </span>
+            {% next_button %}
+        </div>
+    </p>
+
+    <input type="hidden" name="nb_mcf_avec_salaire_moyen" id="id_nb_mcf_avec_salaire_moyen"/>
+    <input type="hidden" name="salaire_moyen" id="id_salaire_moyen"/>
+{% endblock %}
+
+
+{% block scripts %}
+    <script type="text/javascript" src="{% static "lae_codir/highcharts/highcharts.js" %}"></script>
+    <script type="text/javascript" src="{% static "lae_codir/highcharts/modules/data.js" %}"></script>
+    <script type="text/javascript" src="{% static "lae_codir/highcharts/modules/exporting.js" %}"></script>
+
+    <script type="text/javascript">
+    $("#id_enterMasse").click(function() {
+        if (document.getElementById("container").style.visibility == 'visible')
+        {
+            document.getElementById("container").style = "visibility:hidden;";
+            document.getElementById("id_confirmation").style = "visibility:hidden;";
+        }
+        else
+        {
+            document.getElementById("container").style = "visibility:visible;";
+            document.getElementById("id_confirmation").style = "visibility:visible;";
+        }
+    });
+    </script>
+
+    <script>
+    $(function () {
+        $('#container').highcharts({
+            series: [{
+                name: "Salaire moyen / Nb d'embauches possibles",
+                data: {{ dataToBePlotted }}
+                }
+            ],
+            title: {
+                text: "Nombre d'embauches possibles en fonction du salaire moyen"
+            },
+            subtitle: {
+                text: 'Cliquez sur la combinaison que vous désirez sélectionner'
+            },
+            xAxis: {
+                title: {
+                    text: "Salaire moyen (en €)"
+                },
+                max: 100000,
+                tickInterval: 1000,
+                tickWidth: 1,
+                gridLineWidth: 1,
+                labels: {
+                    align: 'left',
+                    x: 3,
+                    y: -3
+                }
+            },
+            yAxis: [{ // left y axis
+                    title: {
+                        text: "Nombre de MCF embauchés"
+                    },
+                    labels: {
+                        align: 'left',
+                        x: 3,
+                        y: 16,
+                        format: '{value:.,0f}'
+                    },
+                    showFirstLabel: false
+                },
+            ],
+
+            legend: {
+                align: 'left',
+                verticalAlign: 'top',
+                y: 20,
+                floating: true,
+                borderWidth: 0
+            },
+
+            tooltip: {
+                shared: true,
+                crosshairs: true,
+                formatter: function() {
+                    return 'Je préfère embaucher ' + this.y + ' MCF au salaire moyen de ' + this.x + '€';
+                }
+            },
+
+            plotOptions: {
+                series: {
+                    allowPointSelect: true,
+                    cursor: 'pointer',
+                    point: {
+                        events: {
+                            click: function (e) {
+                                $("#id_salaire_moyen").val(this.x);
+                                $("#id_chosenSalary").text(this.x);
+                                $("#id_nb_mcf_avec_salaire_moyen").val(this.y);
+                                $("#id_chosenNumberOfMCF").text(this.y);
+                            }
+                        }
+                    },
+                    marker: {
+                        lineWidth: 1
+                    }
+                }
+            }
+        });
+    });
+    </script>
+{% endblock %}

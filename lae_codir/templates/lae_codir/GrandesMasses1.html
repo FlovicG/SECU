@@ -1,0 +1,39 @@
+{% extends "global/Base.html" %}
+{% load staticfiles otree_tags %}
+
+{% block title %}
+    Projection annuelle de développement
+{% endblock %}
+
+{% block content %}
+
+    <div>
+        Considérant que 10 postes de MCF en moyenne seraient chaque année à pourvoir au sein des Facultés,
+        quelle est, compte tenu de vos besoins en matière de développement de la recherche,
+        votre projection d’embauches annuelles (positionnez le curseur ci-dessous) ?
+    </div>
+    <div id="nb_mcf1" style="max-width: 800px; margin: 0 auto"></div>
+
+    <input type="hidden" name="nb_mcf1" id="id_nb_mcf1"/>
+    {% next_button %}
+
+{% endblock %}
+
+{% block styles %}
+    <!-- define a style -->
+    <!-- or reference a static file -->
+    <link href="{% static "lae_codir/freshslider/freshslider.min.css" %}" rel="stylesheet">
+{% endblock %}
+
+{% block scripts %}
+    <script src="{% static "lae_codir/freshslider/freshslider.min.js" %}"></script>
+    <script>
+        document.getElementById("id_nb_mcf1").value = {{player.nb_mcf1}};
+        $("#nb_mcf1").freshslider(
+                {
+                    min: 0, max: 10, step: 1, value: {{player.nb_mcf1}},
+                    onchange:function(value){document.getElementById("id_nb_mcf1").value = value;}
+                }
+        );
+    </script>
+{% endblock %}

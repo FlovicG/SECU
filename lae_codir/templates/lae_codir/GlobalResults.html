@@ -1,0 +1,316 @@
+{% extends "global/Base.html" %}
+{% load staticfiles otree_tags %}
+
+{% block title %}
+    Récapitulatif global des projections
+{% endblock %}
+
+{% block content %}
+
+    <p>
+        <div id="containerGrandesMasses" style="min-width: 310px; max-width: 800px; height: 200px; margin: 0 auto;"></div>
+    </p>
+    <p>
+        <div id="containerMasseSalariale" style="min-width: 310px; height: 400px; margin: 0 auto;"></div>
+    </p>
+    <p>
+        <div id="containerCroissanceIntExt" style="min-width: 310px; height: 400px; margin: 0 auto;"></div>
+    </p>
+    <p>
+        <div>
+                <pre>Sources de financement: {{ group.recettes_icl | linebreaksbr }}</pre>
+                <pre>Commentaires: {{ group.commentaires_icl | linebreaksbr }}</pre>
+        </div>
+    </p>
+{% endblock %}
+
+
+{% block scripts %}
+    <script type="text/javascript" src="{% static "lae_codir/highcharts/highcharts.js" %}"></script>
+    <script type="text/javascript" src="{% static "lae_codir/highcharts/modules/data.js" %}"></script>
+    <script type="text/javascript" src="{% static "lae_codir/highcharts/modules/exporting.js" %}"></script>
+
+    <script>
+        $(function () {
+            $('#containerGrandesMasses').highcharts({
+                chart: {
+                    type: 'bar',
+                    backgroundColor: '#F0F0F0',
+                },
+                title: {
+                    text: 'Projection annuelle de développement'
+                },
+                xAxis: {
+                    categories: ['Nombre de MCF']
+                },
+                yAxis: {
+                    min: 0,
+                },
+                legend: {
+                    reversed: true
+                },
+                plotOptions: {
+                    series: {
+                        stacking: 'normal',
+                        dataLabels: {
+                            enabled: true,
+                            color: (Highcharts.theme && Highcharts.theme.dataLabelsColor) || 'white',
+                            style: {
+                                textShadow: '0 0 3px black'
+                            }
+                        }
+                    }
+                },
+                series: [{
+                    name: 'FMM-SanteSocial',
+                    data: [ {{group.nb_mcf_fmm}} ]
+                }, {
+                    name: 'FT',
+                    data: [ {{group.nb_mcf_ft}} ]
+                }, {
+                    name: 'FGES',
+                    data: [ {{group.nb_mcf_fges}} ]
+                }, {
+                    name: 'FLSH',
+                    data: [ {{group.nb_mcf_flsh}} ]
+                }, {
+                    name: 'FD',
+                    data: [ {{group.nb_mcf_fd}} ]
+                }, {
+                    name: 'Espol',
+                    data: [ {{group.nb_mcf_espol}} ]
+                }, {
+                    name: 'Anthropo-Lab',
+                    data: [ {{group.nb_mcf_anthropolab}} ]
+                }]
+            });
+        });
+    </script>
+
+    <script>
+    $(function () {
+        $('#containerMasseSalariale').highcharts({
+            chart: {
+                zoomType: 'xy',
+                backgroundColor: '#F0F0F0',
+            },
+            title: {
+                text: 'Détermination de l’effort salarial'
+            },
+            subtitle: {
+                text: 'par entité'
+            },
+            xAxis: [{
+                categories: ['FMM-SanteSocial', 'FT', 'FGES', 'FLSH',
+                    'FD', 'Espol', 'Anthropo-Lab'],
+                crosshair: true
+            }],
+            yAxis: [{ // Primary yAxis
+                labels: {
+                    format: '{value} €',
+                    style: {
+                        color: Highcharts.getOptions().colors[0]
+                    }
+                },
+                title: {
+                    text: 'Salaire moyen (en €)',
+                    style: {
+                        color: Highcharts.getOptions().colors[0]
+                    }
+                },
+                plotLines: [{
+                    value: {{group.salaire_moyen_icl}},
+                    color: Highcharts.getOptions().colors[0],
+                    width: 1,
+                    label: {
+                        text: 'Salaire moyen ICL',
+                        align: 'left',
+                        style: {
+                            color: Highcharts.getOptions().colors[0]
+                        }
+                    }
+                }]
+            }, { // Secondary yAxis
+                title: {
+                    text: "Nombre d'embauches",
+                    style: {
+                        color: Highcharts.getOptions().colors[1]
+                    }
+                },
+                labels: {
+                    format: '{value} MCF',
+                    style: {
+                        color: Highcharts.getOptions().colors[1]
+                    }
+                },
+                plotLines: [{
+                    value: {{group.nb_mcf_avec_salaire_moyen_icl}},
+                    color: Highcharts.getOptions().colors[1],
+                    width: 2,
+                    label: {
+                        text: 'Nb MCF moyen ICL',
+                        align: 'right',
+                        style: {
+                            color: Highcharts.getOptions().colors[1]
+                        }
+                    }
+                }],
+                opposite: true
+            }],
+            tooltip: {
+                shared: true
+            },
+            legend: {
+                layout: 'vertical',
+                align: 'left',
+                x: 120,
+                verticalAlign: 'top',
+                y: 0,
+                floating: true,
+                backgroundColor: (Highcharts.theme && Highcharts.theme.legendBackgroundColor) || '#FFFFFF'
+            },
+            series: [
+                {
+                    name: 'Salaire Moyen',
+                    type: 'column',
+                    data: [
+                        {{group.salaire_moyen_fmm}}, {{group.salaire_moyen_ft}}, {{group.salaire_moyen_fges}},
+                        {{group.salaire_moyen_flsh}}, {{group.salaire_moyen_fd}}, {{group.salaire_moyen_espol}},
+                        {{group.salaire_moyen_anthropolab}}
+                    ],
+                    tooltip: {
+                        valueSuffix: ' €'
+                    }
+                },
+                {
+                    name: "Nombre d'embauches",
+                    type: 'spline',
+                    yAxis: 1,
+                    data: [
+                            {{group.nb_mcf_avec_salaire_moyen_fmm}}, {{group.nb_mcf_avec_salaire_moyen_ft}}, {{group.nb_mcf_avec_salaire_moyen_fges}},
+                            {{group.nb_mcf_avec_salaire_moyen_flsh}}, {{group.nb_mcf_avec_salaire_moyen_fd}}, {{group.nb_mcf_avec_salaire_moyen_espol}},
+                            {{group.nb_mcf_avec_salaire_moyen_anthropolab}}
+                    ],
+                    tooltip: {
+                        valueSuffix: ' MCF'
+                    }
+                }
+            ]
+        });
+    });
+    </script>
+
+    <script>
+    $(function () {
+        $('#containerCroissanceIntExt').highcharts({
+            chart: {
+                zoomType: 'xy',
+                backgroundColor: '#F0F0F0',
+            },
+            title: {
+                text: 'Croissance externe vs. Croissance interne'
+            },
+            subtitle: {
+                text: 'par entité'
+            },
+            xAxis: [{
+                categories: ['FMM-SanteSocial', 'FT', 'FGES', 'FLSH',
+                    'FD', 'Espol', 'Anthropo-Lab'],
+                crosshair: true
+            }],
+            yAxis: [{ // Primary yAxis
+                labels: {
+                    format: '{value} heures/an',
+                    style: {
+                        color: Highcharts.getOptions().colors[0]
+                    }
+                },
+                title: {
+                    text: 'HFF',
+                    style: {
+                        color: Highcharts.getOptions().colors[0]
+                    }
+                },
+                plotLines: [{
+                    value: {{group.hff_moyen_icl}},
+                    color: Highcharts.getOptions().colors[0],
+                    width: 2,
+                    label: {
+                        text: 'HFF moyen ICL',
+                        align: 'left',
+                        style: {
+                            color: Highcharts.getOptions().colors[0]
+                        }
+                    }
+                }]
+            }, { // Secondary yAxis
+                title: {
+                    text: 'Coût vacataires par an',
+                    style: {
+                        color: Highcharts.getOptions().colors[1]
+                    }
+                },
+                labels: {
+                    format: '{value} €',
+                    style: {
+                        color: Highcharts.getOptions().colors[1]
+                    }
+                },
+                plotLines: [{
+                    value: {{group.cout_vacation_avec_hff_moyen_icl}},
+                    color: Highcharts.getOptions().colors[1],
+                    width: 2,
+                    label: {
+                        text: 'Coût vacataires moyen ICL',
+                        align: 'right',
+                        style: {
+                            color: Highcharts.getOptions().colors[1]
+                        }
+                    }
+                }],
+                opposite: true
+            }],
+            tooltip: {
+                shared: true
+            },
+            legend: {
+                layout: 'vertical',
+                align: 'left',
+                x: 120,
+                verticalAlign: 'top',
+                y: 0,
+                floating: true,
+                backgroundColor: (Highcharts.theme && Highcharts.theme.legendBackgroundColor) || '#FFFFFF'
+            },
+            series: [
+                {
+                    name: 'HFF',
+                    type: 'column',
+                    data: [
+                        {{group.hff_fmm}}, {{group.hff_ft}}, {{group.hff_fges}},
+                        {{group.hff_flsh}}, {{group.hff_fd}}, {{group.hff_espol}},
+                        {{group.hff_anthropolab}}
+                    ],
+                    tooltip: {
+                        valueSuffix: ' heures/an'
+                    }
+                },
+                {
+                    name: 'Coût vacataires',
+                    type: 'spline',
+                    yAxis: 1,
+                    data: [
+                            {{group.cout_vacation_avec_hff_fmm}}, {{group.cout_vacation_avec_hff_ft}}, {{group.cout_vacation_avec_hff_fges}},
+                            {{group.cout_vacation_avec_hff_flsh}}, {{group.cout_vacation_avec_hff_fd}}, {{group.cout_vacation_avec_hff_espol}},
+                            {{group.cout_vacation_avec_hff_anthropolab}}
+                    ],
+                    tooltip: {
+                        valueSuffix: ' €'
+                    }
+                }
+            ]
+        });
+    });
+    </script>
+
+{% endblock %}
