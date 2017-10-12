@@ -1,0 +1,92 @@
+{% extends "global/Base.html" %}
+{% load staticfiles otree_tags %}
+
+
+{% block title %}
+    2ème cas: 3 hommes
+{% endblock %}
+
+
+{% block content %}
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12" align="justify" style="background-color:white;">
+                {% if role == 'Conducteur' %}
+                <p>
+                    Vous êtes le conducteur de la voiture.<br>
+                    Préférez-vous que la voiture que vous avez achetée soit programmée pour le scénario de gauche ou
+                    pour celui de droite?<br>
+                    Cliquez sur le scénario que vous choisissez puis sur "Suivant".<br>
+                </p>
+                {% elif role == 'Decideur' %}
+                <p>
+                    Vous êtes décideur politique.<br>
+                    Décidez-vous que les voitures soient programmées pour le scénario de gauche ou pour
+                    celui de droite?<br>
+                    Cliquez sur le scénario que vous choisissez puis sur "Suivant".<br>
+                </p>
+                {% endif %}
+                <table width="100%">
+                    <tr>
+                        <td align="left">
+                            <img id="id_sc_1" onclick="countSc1()" width="400px" height="auto"
+                                 src="{% static "voiture/pop1_nb2_sc1.png" %}"/><br>
+                        </td>
+                        <td align="center" width="100px">
+                        </td>
+                        <td align="right">
+                            <img id="id_sc_2" onclick="countSc2()" width="400px" height="auto"
+                                 src="{% static "voiture/pop1_nb2_sc2.png" %}"/><br>
+                        </td>
+                    </tr>
+                </table>
+                <br><br>
+
+                <p>
+                    {{ decision_formset.management_form }}
+                    <ul>
+                    {% for form in decision_arguments %}
+                            <li>{{ form }}</li>
+                    {% endfor %}
+                    </ul>
+                </p>
+
+                <p>
+                    <input id="id_nextButton" class="btn btn-primary btn-large btn-primary next-button" type="submit"
+                           style="visibility:visible;" value="Suivant" />
+                </p>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+
+{% block scripts %}
+    <script>
+        document.getElementById("id_form-0-player_decision").value = 99;
+        function countSc1() {
+            document.getElementById("id_nextButton").style = "visibility:visible;";
+            document.getElementById("id_sc_2").className="unselected";
+            document.getElementById("id_sc_1").className="selected";
+            document.getElementById("id_form-0-player_decision").value = 1;
+        }
+        function countSc2() {
+            document.getElementById("id_nextButton").style = "visibility:visible;";
+            document.getElementById("id_sc_1").className="unselected";
+            document.getElementById("id_sc_2").className="selected";
+            document.getElementById("id_form-0-player_decision").value = 2;
+        }
+    </script>
+{% endblock %}
+
+
+{% block styles %}
+    <style>
+        .selected{
+           border : 30px solid green;
+        }
+        .unselected{
+           border : none;
+        }
+    </style>
+{% endblock %}

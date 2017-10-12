@@ -1,0 +1,256 @@
+{% extends "global/Base.html" %}
+{% load staticfiles otree_tags %}
+{% load otreechat %}
+
+
+{% block title %}
+    1er cas: 2 hommes
+{% endblock %}
+
+
+{% block content %}
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12" align="justify" style="background-color:white;">
+                {% if role == 'Conducteur' %}
+                <p>
+                    Vous êtes le conducteur de la voiture.<br>
+                    Préférez-vous que la voiture que vous avez achetée soit programmée pour le scénario de gauche ou
+                    pour celui de droite?<br>
+                    Cliquez sur le scénario que vous choisissez puis sur "Suivant".<br>
+                </p>
+                {% elif role == 'Decideur' %}
+                <p>
+                    Vous êtes décideur politique.<br>
+                    Décidez-vous que les voitures soient programmées pour le scénario de gauche ou pour
+                    celui de droite?<br>
+                    Cliquez sur le scénario que vous choisissez puis sur "Suivant".<br>
+                </p>
+                {% endif %}
+                <table width="100%">
+                    <tr>
+                        <td align="left">
+                            <img id="id_sc_1" onclick="countSc1()" width="400px" height="auto"
+                                 src="{% static "voiture/pop1_nb1_sc1.png" %}"/><br>
+                        </td>
+                        <td align="center" width="100px">
+                        </td>
+                        <td align="right">
+                            <img id="id_sc_2" onclick="countSc2()" width="400px" height="auto"
+                                 src="{% static "voiture/pop1_nb1_sc2.png" %}"/><br>
+                        </td>
+                    </tr>
+                </table>
+                <br><br>
+
+                <p>
+                    {{ decision_formset.management_form }}
+                    <ul>
+                    {% for form in decision_arguments %}
+                            <li>{{ form }}</li>
+                    {% endfor %}
+                    </ul>
+                </p>
+                <p>
+                    {# Display the existing questions #}
+                    {% for question in existing_questions %}
+                        {{question.question_text}}
+                            {% for answer in question.answerfromexpert_set.all %}
+                                {{answer.answer_text}}
+                            {% endfor %}
+                    {% endfor %}
+
+                    <textarea id="id_question2expert" rows="4" cols="50">
+                        Type your question here
+                    </textarea>
+
+                    <input id='id_askbtn'
+                           class="btn  btn-large btn-primary next-button" onclick='sendquestion()'
+                           type="button"  value="Ask to Expert">
+                </p>
+
+                <p>
+                <input id='ebaybtn'
+                       class="btn  btn-large btn-primary next-button" onclick='sendmessage()'
+                       type="button"  value="Share">
+                </p>
+
+                <p>
+                    <input id="id_nextButton" class="btn btn-primary btn-large btn-primary next-button" type="submit"
+                           style="visibility:visible;" value="Suivant" />
+                </p>
+
+<span id="id_test">TEST</span>
+
+{% chat channel="experts" %}
+
+                <div id="highchartscontainer"></div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+
+{% block scripts %}
+    <script src="https://code.highcharts.com/highcharts.js"></script>
+    <script src="https://code.highcharts.com/modules/exporting.js"></script>
+    <script>
+        document.getElementById("id_form-0-player_decision").value = 99;
+        function countSc1() {
+            document.getElementById("id_nextButton").style = "visibility:visible;";
+            document.getElementById("id_sc_2").className="unselected";
+            document.getElementById("id_sc_1").className="selected";
+            document.getElementById("id_form-0-player_decision").value = 1;
+        }
+        function countSc2() {
+            document.getElementById("id_nextButton").style = "visibility:visible;";
+            document.getElementById("id_sc_1").className="unselected";
+            document.getElementById("id_sc_2").className="selected";
+            document.getElementById("id_form-0-player_decision").value = 2;
+        }
+    </script>
+    <script>
+        var refresh_period = {{ Constants.refresh_period_insec }};
+        //var startingTime = {{ group.timer_Q1Pop1_startingTime }};
+        var d = new Date();
+
+        initial_series = [
+            {
+                name: 'No choice yet',
+                data: [0, 0, 0]
+            },
+            {
+                name: 'Choice 1',
+                data: [0, 1, 0]
+            },
+            {
+                name: 'Choice 2',
+                data: [0, 2, 0]
+            }]
+
+        function initialise_chart(series){
+            Highcharts.chart('highchartscontainer', {
+                title: {
+                    text: 'Decisions'
+                },
+                subtitle: {
+                    text: '1, 2, or not yet decided'
+                },
+                yAxis: {
+                    title: {
+                        text: 'Number of choices'
+                    }
+                },
+                legend: {
+                    layout: 'vertical',
+                    align: 'right',
+                    verticalAlign: 'middle'
+                },
+                plotOptions: {
+                    series: {
+                        //??? pointStart: 2010,
+                        pointInterval: refresh_period * 1000
+                    }
+                },
+
+                xAxis: {
+                        type: 'datetime'
+                    },
+
+                series: series
+            });
+        }
+
+        window.onload = function() {
+            var curprice = 222;
+
+            var ws_scheme = window.location.protocol == "https:" ? "wss" : "ws";
+            var socket = new WebSocket(ws_scheme + '://' + window.location.host + "/primo_fmr/group{{group.id}}/question1");
+
+            // Handle any errors that occur.
+            socket.onerror = function(error) {
+                console.log('WebSocket Error: ' + error);
+            };
+
+            sendmessage = function(what) {
+                // Get the checked arguments
+                var checkedCheckboxes = [];
+                $('input[name="form-0-argument"]').each(function(){
+                    if ($(this).is(':checked')) {
+                        checkedCheckboxes.push($(this).val())
+                    }
+                });
+                var msg = {
+                    id: {{player.id}},
+                    decision: document.getElementById("id_form-0-player_decision").value,
+                    argument: checkedCheckboxes,
+                    id_in_group: {{player.id_in_group}},
+                    };
+                if(socket.readyState === socket.OPEN){
+                socket.send(JSON.stringify(msg));
+                }
+            }
+
+            initialise_chart(initial_series);
+
+            sendquestion = function(what) {
+                var msg = {
+                    id: {{player.id}},
+                    question2expert: document.getElementById("id_question2expert").value,
+                    id_in_group: {{player.id_in_group}},
+                    };
+                if(socket.readyState === socket.OPEN){
+                    socket.send(JSON.stringify(msg));
+                }
+            }
+
+            // Show a connected message when the WebSocket is opened.
+            socket.onopen = function(event) {
+                console.log('connected to oTree');
+            };
+
+            // Handle messages sent by the server.
+            socket.onmessage = function(event) {
+                var obj = jQuery.parseJSON(event.data);
+
+                var chart = $('#highchartscontainer').highcharts();
+
+                chart.series[0].setData(obj.datanotyet, false);
+                chart.series[1].setData(obj.data1, false);
+                chart.series[2].setData(obj.data2, false);
+                $('#highchartscontainer').highcharts().redraw();
+            };
+
+            // Show a disconnected message when the WebSocket is closed.
+            socket.onclose = function(event) {
+                console.log('disconnected from oTree');
+            };
+
+        };
+
+    </script>
+<script>
+
+
+</script>
+{% endblock %}
+
+
+{% block styles %}
+    <style>
+        .selected{
+           border : 30px solid green;
+        }
+        .unselected{
+           border : none;
+        }
+    </style>
+    <style>
+        #highchartscontainer {
+        min-width: 310px;
+        max-width: 800px;
+        height: 400px;
+        margin: 0 auto
+    }
+    </style>
+{% endblock %}
