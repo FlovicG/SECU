@@ -1,0 +1,198 @@
+{% extends "global/Page.html" %}
+{% load staticfiles otree_tags %}
+
+{% block title %}
+    DecisionPage
+{% endblock %}
+
+{% block content %}
+
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12" align="justify" style="background-color:white;">
+
+                <div id="id_nb_ETP" style="max-width: 800px; margin: 0 auto"></div>
+                <div id="id_arguments">
+                    {{ decision_formset.management_form }}
+                    <ul>
+                    {% for form in decision_arguments %}
+                            <li>{{ form }}</li>
+                    {% endfor %}
+                    </ul>
+                </div>
+                <div id="id_nbETP_container"></div>
+
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12" align="justify" style="background-color:white;">
+                {% next_button %}
+            </div>
+        </div>
+    </div>
+
+<div id="id_test"></div>
+
+{% endblock %}
+
+{% block styles %}
+    <link href="{% static "ostende/freshslider/freshslider.min.css" %}" rel="stylesheet">
+    <style>
+        #id_nbETP_container {
+        min-width: 310px;
+        max-width: 800px;
+        height: 400px;
+        margin: 0 auto
+    }
+    </style>
+{% endblock %}
+
+{% block scripts %}
+    <script src="{% static "ostende/freshslider/freshslider.min.js" %}"></script>
+    <script src="https://code.highcharts.com/highcharts.js"></script>
+    <script src="https://code.highcharts.com/modules/exporting.js"></script>
+    <script>
+        var nb_players_to_be_displayed = 6;
+        var socket;
+        var last_sent_nbETP = {{current_decision}};
+        var last_checkedCheckboxes = [];
+        var FunOnload = new Array();
+
+        function initialise_highchart(){
+             var chart = Highcharts.chart('id_nbETP_container', {
+                 title: {
+                     text: 'Decisions'
+                 },
+                 subtitle: {
+                     text: '1, 2, or not yet decided'
+                 },
+                 yAxis: {
+                     title: {
+                         text: 'Number of choices'
+                     }
+                 },
+                 legend: {
+                     layout: 'vertical',
+                     align: 'right',
+                     verticalAlign: 'middle'
+                 },
+                 plotOptions: {
+                     series: {
+                         pointStart: 2010,
+                         pointInterval: {{Constants.c_refresh_to_clients_insec}} * 1000
+                     }
+                 },
+                 xAxis: {
+                         type: 'datetime'
+                 },
+             });
+             for(i=0; i<nb_players_to_be_displayed; i ++){
+                chart.addSeries({name:"",data:[]});
+             }
+        }
+        //------------------------ Channels ------------------------
+        function start_channels(){
+            // Initialise the channels
+            // Connect the channel
+            var ws_scheme = window.location.protocol == "https:" ? "wss" : "ws";
+            socket = new WebSocket(ws_scheme + '://' + window.location.host + "/ostende/group{{group.id}}");
+            // Handle any errors that occur.
+            socket.onerror = function(error) {
+                console.log('WebSocket Error: ' + error);
+            };
+            // Show a connected message when the WebSocket is opened.
+            socket.onopen = function(event) {
+                console.log('connected to oTree');
+            };
+            // Handle messages sent by the server.
+            socket.onmessage = function(event) {
+                var obj = jQuery.parseJSON(event.data);
+                var chart = $('#id_nbETP_container').highcharts();
+                var nb_series = 0;
+                for (var key in obj) {nb_series += 1;}
+
+                // Adjust the number of series in case new ones appeared
+                if ( nb_players_to_be_displayed < nb_series ){
+                    for (i=0; i<(nb_series-nb_players_to_be_displayed); i ++){
+                        chart.addSeries({data:[]});
+                    }
+                    nb_players_to_be_displayed = nb_series;
+                }
+                else if ( nb_players_to_be_displayed > nb_series ){
+                    for (i=0; i<(nb_players_to_be_displayed-nb_series); i ++){
+                        chart.series[i].remove();
+                    }
+                    nb_players_to_be_displayed = nb_series;
+                }
+                // Update the data of the series
+                i = 0;
+                for (var key in obj) {
+                    chart.series[i].setData(obj[key], false);
+                    i += 1;
+                }
+                $('#id_nbETP_container').highcharts().redraw();
+            };
+            // Show a disconnected message when the WebSocket is closed.
+            socket.onclose = function(event) {
+                console.log('disconnected from oTree');
+            };
+        }
+        //------------------------ Slider ------------------------
+        function start_slider(){
+            // Initialise the slider
+            document.getElementById("id_form-0-nb_ETP").value = {{current_decision}};
+            $("#id_nb_ETP").freshslider(
+                    {
+                        min: 0, max: 10, step: 1, value: {{current_decision}},
+                        onchange:function(value){
+                            document.getElementById("id_form-0-nb_ETP").value = value;
+                        }
+                    }
+            );
+        }
+        //------------------------ Update ------------------------
+        function start_update(){
+            // Manage the update to the server
+            updateMyData = function() {
+                // Get the checked arguments
+                var checkedCheckboxes = [];
+                $('input[name="form-0-argument"]').each(function(){
+                    if ($(this).is(':checked')) {
+                        checkedCheckboxes.push($(this).val())
+                    }
+                });
+                var msg = {
+                    player_id: {{player.id}},
+                    round_number: {{subsession.round_number}},
+                    nb_ETP: document.getElementById("id_form-0-nb_ETP").value,
+                    argument: checkedCheckboxes,
+                    id_in_group: {{player.id_in_group}},
+                    };
+                if((socket.readyState == socket.OPEN)
+                    &&((JSON.stringify(checkedCheckboxes)!=JSON.stringify(last_checkedCheckboxes))
+                        ||(last_sent_nbETP!=document.getElementById("id_form-0-nb_ETP").value))){
+                    last_sent_nbETP = document.getElementById("id_form-0-nb_ETP").value;
+                    last_checkedCheckboxes = checkedCheckboxes;
+                    socket.send(JSON.stringify(msg));
+                }
+            }
+            setInterval(function(){ updateMyData(); }, {{Constants.c_refresh_from_clients_insec}} * 1000);
+        }
+        //------------------------ Tools ------------------------
+        function lancer(fonction) {
+            FunOnload[FunOnload.length] = fonction;
+        }
+        //------------------------ Initialisation ------------------------
+        lancer(start_channels);
+        lancer(start_slider);
+        lancer(start_update);
+        lancer(initialise_highchart);
+
+        window.onload = function() {
+            for(var i = 0, longueur = FunOnload.length; i < longueur; i++)
+                FunOnload[i](); //On exécute les fonctions.
+        };
+    </script>
+
+{% endblock %}

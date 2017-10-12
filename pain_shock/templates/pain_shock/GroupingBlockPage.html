@@ -1,0 +1,37 @@
+{% extends "global/Base.html" %}
+{% load staticfiles otree_tags %}
+
+
+{% block title %}
+    <meta http-equiv="Refresh" content="3">
+    Grouping Block Page
+{% endblock %}
+
+
+{% block content %}
+
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12" align="center" style="background-color:white;">
+                <input id ="id_nextButton" class="btn btn-primary btn-large btn-primary next-button" type="submit"
+                       style="visibility:hidden;" value="Next" />
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
+
+
+{% block scripts %}
+
+    <script>
+    window.onload = checkGrouping;
+    function checkGrouping(){
+        const grouping_done = {{ this_round_grouping_done }}
+        if ( grouping_done ){
+            document.getElementById("id_nextButton").click();
+        }
+    }
+    </script>
+
+{% endblock %}

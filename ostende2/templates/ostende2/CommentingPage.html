@@ -1,0 +1,413 @@
+{% extends "global/Page.html" %}
+{% load staticfiles otree_tags %}
+
+
+{% block title %}
+    <div align="center">
+        {{ entite }}
+        <br>
+        <i>Entrez vos commentaires sur les autres propositions</i>
+    </div>
+{% endblock %}
+
+
+{% block content %}
+
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12" align="center">
+                <div>
+                    <table id="id_propositions_table" class="app_table">
+                        <tr>
+                            <th>
+                                Entité
+                            </th>
+                            <th>
+                                Vision
+                            </th>
+                            <th>
+                                <b>Quick-Win</b><br>
+                                <span style="font-size: 0.8em;"><i>peu de moyens, gains importants</i></span>
+                            </th>
+                            <th>
+                                <b>Objectif majeur de transformation</b><br>
+                                <span style="font-size: 0.8em;"><i>beaucoup de moyens, gains importants</i></span>
+                            </th>
+                        </tr>
+                    </table>
+                    {{ appreciation_formset.management_form }}
+                    {% for pk, form in appreciation_pk_forms %}
+                        {{ form }}
+                    {% endfor %}
+                </div>
+
+                <br><br><br>
+
+                <table id="id_buttons_table">
+                    <td id="id_validatebtn_cell">
+                        <button id="id_validatebtn" type="button" class="btn btn-default">Valider</button>
+                    </td>
+                    <td id="id_nextbtn_cell">
+                        <div id="id_next_button_div" style="visibility: hidden">{% next_button %}</div>
+                    </td>
+                </table>
+            </div>
+        </div>
+    </div>
+
+<!--
+    <div id="id_test">TEST</div>
+    <div id="id_test2">TEST</div>
+    <div id="id_test3">TEST</div>
+-->
+
+{% endblock %}
+
+
+{% block scripts %}
+    <script src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
+    <script>
+    $("#id_validatebtn_cell").click(function() {
+        if (document.getElementById("id_next_button_div").style.visibility == 'visible')
+        {
+            document.getElementById("id_next_button_div").style = "visibility:hidden;";
+        }
+        else
+        {
+            document.getElementById("id_next_button_div").style = "visibility:visible;";
+        }
+    });
+    </script>
+    <script>
+        var FunOnload = new Array();
+        var propositions = {{ all_propositions | json }};
+        var appreciations = {{ all_appreciations | json }};
+        var app_pk_formids = {{ appreciation_pk_formsid | json }};
+        var test = {{ Constants.c_proposition_types.0 | json }};
+        //-------------------------------------------------------
+        //-------------------------------------------------------
+        function create_simplecell(ligne, colonne, row, prop){
+            // Colonne "entité"
+            cell = document.createElement("td");
+            var DOM_span = document.createElement("span");
+            DOM_span.setAttribute('id', "id_entite_" + (ligne+colonne));
+            DOM_span.setAttribute('name', "entite");
+            DOM_span.setAttribute('class', "entity-name");
+            if((prop.type=={{ Constants.c_proposition_types.0 | json }})
+                ||(prop.type=={{ Constants.c_proposition_types.1 | json }})
+                ||(prop.type=={{ Constants.c_proposition_types.2 | json }})){
+                DOM_span.innerHTML = prop.entite;
+            }
+            else{
+                DOM_span.innerHTML = "ICL,<br>\npar " + prop.entite;
+            }
+            cell.appendChild(DOM_span);
+            row.appendChild(cell);
+        }
+        //-------------------------------------------------------
+        function create_clickablecell(ligne, colonne, row, prop){
+            //-------------------------------------------------------
+            var myappreciations = appreciations;
+            // Find the appreciation.pk related to this proposition.pk
+            do{
+                app = myappreciations.pop();
+            } while(app.prop_pk!=prop.prop_pk);
+            // Get the current note and reaction
+            var app_note = app.note;
+            var app_reaction = app.reaction;
+            // Find the appreciation.form.id related to this appreciation.pk
+            var z = 0;
+            while(app_pk_formids[z][0]!=app.app_pk){
+                z ++;
+            }
+            var app_form_id = app_pk_formids[z][1];
+
+            //-------------------------------------------------------
+            // Create the cell
+            cell = document.createElement("td");
+            // Create the link
+            var DOM_link = document.createElement("a");
+            DOM_link.setAttribute('id', "id_link_" + (ligne+colonne));
+            DOM_link.setAttribute('name', "link");
+            DOM_link.setAttribute('href', "#");
+            DOM_link.setAttribute('width', "500");
+            DOM_link.setAttribute('data-rel', "fpopup" + app_form_id);
+
+            DOM_link.setAttribute('class', "poplight link");
+            DOM_link.innerHTML = "- commenter -";
+            // Create the note
+            var DOM_spannote = document.createElement("span");
+            DOM_spannote.setAttribute('id', "id_propositionnote_" + prop.prop_pk);
+            DOM_spannote.setAttribute('name', "note");
+            DOM_spannote.setAttribute('class', "proposition-note");
+            DOM_spannote.innerHTML = "Moyenne actuelle: " + prop.note;
+            // Create the text
+            var DOM_spantext = document.createElement("span");
+            DOM_spantext.setAttribute('id', "id_proposition_" + prop.prop_pk);
+            DOM_spantext.setAttribute('name', "proposition");
+            DOM_spantext.setAttribute('class', "proposition-text");
+            DOM_spantext.innerHTML = prop.text;
+            // Create some layout helps
+            var DOM_br = document.createElement("BR");
+            var DOM_br2 = document.createElement("BR");
+            // Lay everything out in the cell
+            cell.appendChild(DOM_spantext);
+            cell.appendChild(DOM_br);
+//???            cell.appendChild(DOM_spannote);
+//???            cell.appendChild(DOM_br2);
+            cell.appendChild(DOM_link);
+            row.appendChild(cell);
+
+            //-------------------------------------------------------
+            // Create the popup to enter the appreciation
+            // Create the div to explain the proposition (text and current note)
+            var popup1 = document.createElement("div");
+            popup1.setAttribute('class', "popup_block");
+            popup1.setAttribute('id', "fpopup" + app_form_id);
+
+            var popup1type = document.createElement("span");
+            popup1type.setAttribute('class', "proposition-type");
+            popup1type.innerHTML = prop.type + ", " + prop.entite + ":";
+
+            var popup1moyenne = document.createElement("span");
+            popup1moyenne.setAttribute('class', "proposition-note");
+            popup1moyenne.innerHTML = "moyenne actuelle: " + prop.note;
+
+            var popup1texte = document.createElement("span");
+            popup1texte.innerHTML = prop.text;
+
+            // Create the input to enter the note
+            var popup1note = document.createElement("input");
+            popup1note.setAttribute('name', "form-" + app_form_id + "-tnote");
+            popup1note.setAttribute('id', "id_form-" + app_form_id + "-tnote");
+            popup1note.setAttribute('type', "number");
+            popup1note.value = app_note;
+//??? <div id="nb_mcf3" style="max-width: 800px; margin: 0 auto; visibility: visible;"> what </div>
+//??? var noteslider = document.createElement("div");
+//??? noteslider.setAttribute('id', "nb_mcf3");
+//??? noteslider.setAttribute('style', "max-width: 100px; margin: 0 auto; visibility: visible;");
+
+            // Create the text to present the reaction
+            var popup1reactionpresentation = document.createElement("span");
+            popup1reactionpresentation.setAttribute('class', "proposition-type");
+            popup1reactionpresentation.innerHTML = "Veuillez entrer votre commentaire:";
+
+            // Create the input to enter the reaction
+            //??? var popup1reaction = document.createElement("input");
+            var popup1reaction = document.createElement("textarea");
+popup1reaction.id = "id_form-" + app_form_id + "-treaction";
+popup1reaction.name = "form-" + app_form_id + "-treaction";
+//??? document.getElementById("id_test").innerHTML = popup1reaction.name;
+
+            popup1reaction.type = "text";
+//??? popup1reaction.setAttribute('id', "id_form-" + app_form_id + "-treaction");
+//??? popup1reaction.setAttribute('name', "form-" + app_form_id + "-treaction");
+            popup1reaction.setAttribute('maxlength', "10000");
+            popup1reaction.setAttribute('cols', "30");
+            popup1reaction.setAttribute('rows', "8");
+            popup1reaction.setAttribute('type', "text");
+            //??? popup1reaction.setAttribute('value', app_reaction);
+            popup1reaction.innerHTML = app_reaction;
+
+            // Create some layout helps
+            var DOM_br3 = document.createElement("BR");
+            var DOM_br4 = document.createElement("BR");
+            var DOM_br5 = document.createElement("BR");
+            var DOM_br6 = document.createElement("BR");
+            // Lay everything out in the cell
+            popup1.appendChild(popup1type);
+            popup1.appendChild(DOM_br3);
+//???            popup1.appendChild(popup1moyenne);
+//???            popup1.appendChild(DOM_br4);
+            popup1.appendChild(popup1texte);
+            popup1.appendChild(DOM_br5);
+            popup1.appendChild(popup1reactionpresentation);
+            popup1.appendChild(DOM_br6);
+            popup1.appendChild(popup1reaction);
+//???            popup1.appendChild(popup1note);
+//???            document.body.appendChild(noteslider);
+            document.body.appendChild(popup1);
+        }
+
+        function create_propositions_table(){
+            tabBody = document.getElementById("id_propositions_table");
+            // Create the header
+            // Chaque joueur fait 3 propositions: On les met en ligne
+            nb_lines = propositions.length / 3;
+            // Pour chaque ligne
+            for(i=0; i<nb_lines; i++){
+                row=document.createElement("tr");
+                //-------------------------------
+                prop = propositions.pop();
+                // Colonnes "entité" et "type Vision"
+                create_simplecell(i, 0, row, prop);
+                create_clickablecell(i, 1, row, prop);
+                //-------------------------------
+                // Colonne "type Quick-wins"
+                prop = propositions.pop();
+                create_clickablecell(i, 2, row, prop);
+                //-------------------------------
+                // Colonne "type Long-terme"
+                prop = propositions.pop();
+                create_clickablecell(i, 3, row, prop);
+                //-------------------------------
+                tabBody.appendChild(row);
+            }
+        }
+
+        //-------------------------------------------------------
+        //-------------------------------------------------------
+        function clickPopLight() {
+            var popID = $(this).data('rel'); //Trouver la pop-up correspondante
+            var popWidth = $(this).data('width'); //Trouver la largeur
+            //Faire apparaitre la pop-up et ajouter le bouton de fermeture
+            $('#' + popID).fadeIn().css({ 'width': popWidth}).prepend('<a href="#" class="close"><img src="{% static "ostende2/close_pop.png" %}"  class="btn_close" title="Close Window" alt="Close" /></a>');
+            //Récupération du margin, qui permettra de centrer la fenêtre - on ajuste de 80px en conformité avec le CSS
+            var popMargTop = ($('#' + popID).height() + 80) / 2;
+            var popMargLeft = ($('#' + popID).width() + 80) / 2;
+            //Apply Margin to Popup
+            $('#' + popID).css({
+                'margin-top' : -popMargTop,
+                'margin-left' : -popMargLeft
+            });
+            //Apparition du fond - .css({'filter' : 'alpha(opacity=80)'}) pour corriger les bogues d'anciennes versions de IE
+            $('body').append('<div id="fade"></div>');
+            $('#fade').css({'filter' : 'alpha(opacity=80)'}).fadeIn();
+            return false;
+        }
+        function closePopUp() { //Au clic sur le body...
+            $('#fade , .popup_block').fadeOut(function() {
+                $('#fade, a.close').remove();
+                // Sauver les data entrées quand il s'agit d'une popup
+                var ID = $(this).attr("id");
+                if (ID.startsWith("fpopup")){
+                    var ID_nb = ID.substring(6, ID.length);
+//???                    document.getElementById("id_form-" + ID_nb + "-note").value = document.getElementById("id_form-" + ID_nb + "-tnote").value;
+                    document.getElementById("id_form-" + ID_nb + "-reaction").value = document.getElementById("id_form-" + ID_nb + "-treaction").value;
+                }
+            }); //...ils disparaissent ensemble
+            return false;
+        }
+        //------------------------ Tools ------------------------
+        function lancer(fonction) {
+            FunOnload[FunOnload.length] = fonction;
+        }
+        //------------------------ Initialisation ------------------------
+        lancer(create_propositions_table);
+        window.onload = function() {
+
+            for(var i = 0, longueur = FunOnload.length; i < longueur; i++)
+                FunOnload[i](); // On exécute les fonctions d'initialisation
+
+            jQuery(function($){
+                // Lorsque vous cliquez sur un lien de la classe poplight
+                $('a.poplight').on('click', clickPopLight);
+                //Close Popups and Fade Layer
+                $('body').on('click', 'a.close, #fade', closePopUp);
+            });
+        };
+    </script>
+{% endblock %}
+
+{% block styles %}
+    <style>
+        #fade { /*--Masque opaque noir de fond--*/
+            display: none; /*--masqué par défaut--*/
+            background: #000;
+            position: fixed; left: 0; top: 0;
+            width: 100%; height: 100%;
+            opacity: .80;
+            z-index: 9999;
+        }
+        .popup_block{
+            display: none; /*--masqué par défaut--*/
+            background: #fff;
+            padding: 20px;
+            border: 20px solid #ddd;
+            float: left;
+            font-size: 1.2em;
+            text-align: center;
+            position: fixed;
+            top: 50%; left: 50%;
+            z-index: 99999;
+            /*--Les différentes définitions de Box Shadow en CSS3--*/
+            -webkit-box-shadow: 0px 0px 20px #000;
+            -moz-box-shadow: 0px 0px 20px #000;
+            box-shadow: 0px 0px 20px #000;
+            /*--Coins arrondis en CSS3--*/
+            -webkit-border-radius: 10px;
+            -moz-border-radius: 10px;
+            border-radius: 10px;
+        }
+        img.btn_close {
+            float: right;
+            margin: -55px -55px 0 0;
+        }
+        /*--Gérer la position fixed pour IE6--*/
+        *html #fade {
+            position: absolute;
+        }
+        *html .popup_block {
+            position: absolute;
+        }
+    </style>
+    <style>
+        .prop_table {
+            display: block;
+            font-family: sans-serif;
+            -webkit-font-smoothing: antialiased;
+            font-size: 115%;
+            overflow: auto;
+            width: 100%;
+            table-layout: fixed;
+        }
+        th {
+            background-color: rgb(112, 196, 105);
+            color: white;
+            font-weight: normal;
+            padding: 20px 30px;
+            text-align: center;
+            font-weight: bold;
+        }
+        td {
+            background-color: rgb(238, 238, 238);
+            color: rgb(111, 111, 111);
+            padding: 2px 3px;
+            text-align: center;
+            border: 3px solid white;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+        }
+        .entity-name{
+            font-weight: bold;
+        }
+        .proposition-type{
+            font-size: 75%;
+            font-style: italic;
+            text-decoration: underline;
+        }
+        .proposition-note{
+            font-size: 75%;
+            font-style: italic;
+            text-decoration: underline;
+        }
+        .link{
+            font-weight: bold;
+        }
+    </style>
+    <style>
+        #id_buttons_table{
+            width: 100%;
+        }
+        #id_validatebtn_cell {
+            text-align: left;
+            background-color: "white";
+            color: "white";
+        }
+        #id_nextbtn_cell {
+            text-align: right;
+        }
+    </style>
+
+{% endblock %}
+

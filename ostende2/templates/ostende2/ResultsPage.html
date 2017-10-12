@@ -1,0 +1,316 @@
+{% extends "global/Page.html" %}
+{% load staticfiles otree_tags %}
+
+
+{% block title %}
+    <div align="center">
+        Récapitulatif des propositions de chaque entité
+    </div>
+{% endblock %}
+
+
+{% block content %}
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12" align="center">
+                <div>
+                    <table id="id_propositions_table"  class="app_table">
+                        <tr>
+                            <th>
+                                Entité
+                            </th>
+                            <th>
+                                Vision
+                            </th>
+                            <th>
+                                <b>Quick-Win</b><br>
+                                <span style="font-size: 0.8em;"><i>peu de moyens, gains importants</i></span>
+                            </th>
+                            <th>
+                                <b>Objectif majeur de transformation</b><br>
+                                <span style="font-size: 0.8em;"><i>beaucoup de moyens, gains importants</i></span>
+                            </th>
+                        </tr>
+                    </table>
+                    {{ appreciation_formset.management_form }}
+                    {% for pk, form in appreciation_pk_forms %}
+                        {{ form }}
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+<!--
+    <div id="id_test">TEST</div>
+    <div id="id_test2">TEST</div>
+    <div id="id_test3">TEST</div>
+-->
+
+
+{% endblock %}
+
+
+{% block scripts %}
+    <script src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
+    <script>
+        var FunOnload = new Array();
+        var propositions = {{ all_propositions | json }};
+        var appreciations = {{ all_appreciations | json }};
+        var app_pk_formids = {{ appreciation_pk_formsid | json }};
+        //-------------------------------------------------------
+        //-------------------------------------------------------
+        function create_simplecell(ligne, colonne, row, prop){
+            // Colonne "entité"
+            // Create the span to display the entity name
+            cell = document.createElement("td");
+            var DOM_spanentite = document.createElement("span");
+            DOM_spanentite.id = "id_entite_" + (ligne+colonne);
+            DOM_spanentite.name = "entite";
+            DOM_spanentite.innerHTML = prop.entite;
+            // Create the span to display the average notation
+            DOM_spannote = document.createElement("span");
+            DOM_spannote.id = "id_entitenote_" + (ligne+colonne);
+            DOM_spannote.name = "note";
+            DOM_spannote.setAttribute('class', "proposition-note");
+            DOM_spannote.innerHTML = "note moyenne: " + prop.player_note;
+            // Create some layout helps
+            var DOM_br = document.createElement("BR");
+            // Lay everything out in the cell
+            cell.appendChild(DOM_spanentite);
+//???            cell.appendChild(DOM_br);
+//???            cell.appendChild(DOM_spannote);
+            row.appendChild(cell);
+        }
+        //-------------------------------------------------------
+        //-------------------------------------------------------
+        //-------------------------------------------------------
+        function create_clickablecell(ligne, colonne, row, prop){
+            cell = document.createElement("td");
+            var DOM_link = document.createElement("a");
+            DOM_link.id = "id_link_" + (ligne+colonne);
+            DOM_link.name = "link";
+            DOM_link.setAttribute('href', "#");
+            DOM_link.setAttribute('width', "500");
+            DOM_link.setAttribute('data-rel', "popup" + prop.prop_pk);
+            DOM_link.setAttribute('class', "poplight");
+            DOM_link.innerHTML = "voir les commentaires";
+            // Create the text to present the proposition text
+            var proppresentation = document.createElement("span");
+            proppresentation.setAttribute('class', "proposition-note");
+            proppresentation.innerHTML = "Texte final de la proposition:";
+            // Create the span to display the proposition itself
+            var DOM_span = document.createElement("span");
+            DOM_span.id = "id_proposition_" + prop.prop_pk;
+            DOM_span.name = "proposition";
+            DOM_span.style.color = "black";
+            DOM_span.innerHTML = prop.text;
+            // Create the note
+            var DOM_spannote = document.createElement("span");
+            DOM_spannote.id = "id_propositionnote_" + prop.prop_pk;
+            DOM_spannote.name = "note";
+            DOM_spannote.setAttribute('class', "proposition-note");
+            DOM_spannote.innerHTML = "Moyenne finale: " + prop.note;
+            // Create some layout helps
+            var DOM_br = document.createElement("BR");
+            var DOM_br2 = document.createElement("BR");
+            var DOM_br3 = document.createElement("BR");
+            // Lay everything out in the cell
+            cell.appendChild(DOM_link);
+            cell.appendChild(DOM_br);
+//???            cell.appendChild(DOM_spannote);
+//???            cell.appendChild(DOM_br2);
+            cell.appendChild(proppresentation);
+            cell.appendChild(DOM_br3);
+            cell.appendChild(DOM_span);
+            row.appendChild(cell);
+            //-------------------------------------------------------------
+            // Create the popup to see the appreciations for this proposition
+            var popup = document.createElement("div");
+            popup.id = "popup" + prop.prop_pk;
+            popup.setAttribute('class', "popup_block");
+            for(var i=0;i<appreciations.length;i++){
+                var app = appreciations[i];
+                if (app.prop_pk == prop.prop_pk){
+                    var popupnote = document.createElement("span");
+                    popupnote.setAttribute('class', "appreciation-note");
+                    popupnote.innerHTML = "Note: " + app.note;
+                    var popuptext = document.createElement("span");
+                    popuptext.setAttribute('class', "appreciation-text");
+                    popuptext.innerHTML = app.reaction;
+                    var popupseparation = document.createElement("span");
+                    popupseparation.innerHTML = "-------------------------------------";
+                    var DOM_br = document.createElement("BR");
+                    var DOM_br2 = document.createElement("BR");
+                    var DOM_br3 = document.createElement("BR");
+                    popup.appendChild(popupseparation);
+                    popup.appendChild(DOM_br);
+//???                    popup.appendChild(popupnote);
+//???                    popup.appendChild(DOM_br2);
+                    popup.appendChild(popuptext);
+                    popup.appendChild(DOM_br3);
+                }
+            }
+            document.body.appendChild(popup);
+        }
+        function create_propositions_table(){
+           tabBody = document.getElementById("id_propositions_table");
+           // Chaque joueur fait 3 propositions: On les met en ligne
+//??? document.getElementById("id_test").innerHTML = "propositions.length: " + propositions.length;
+           nb_lines = propositions.length / 3;
+//??? document.getElementById("id_test2").innerHTML = "nb_lines: " + nb_lines;
+           // Pour chaque ligne
+           for(var i=0; i<nb_lines; i++){
+               row=document.createElement("tr");
+               //-------------------------------
+               prop = propositions.pop();
+               // Colonnes "entité" et "type Vision"
+               create_simplecell(i, 0, row, prop);
+               create_clickablecell(i, 1, row, prop);
+               //-------------------------------
+               // Colonne "type Quick-wins"
+               prop = propositions.pop();
+               create_clickablecell(i, 2, row, prop);
+               //-------------------------------
+               // Colonne "type Long-terme"
+               prop = propositions.pop();
+               create_clickablecell(i, 3, row, prop);
+               //-------------------------------
+               tabBody.appendChild(row);
+           }
+        }
+        //-------------------------------------------------------
+        //-------------------------------------------------------
+        function clickPopLight() {
+            var popID = $(this).data('rel'); //Trouver la pop-up correspondante
+            var popWidth = $(this).data('width'); //Trouver la largeur
+            //Faire apparaitre la pop-up et ajouter le bouton de fermeture
+            $('#' + popID).fadeIn().css({ 'width': popWidth}).prepend('<a href="#" class="close"><img src="{% static "ostende2/close_pop.png" %}" class="btn_close" title="Close Window" alt="Close" /></a>');
+            //Récupération du margin, qui permettra de centrer la fenêtre - on ajuste de 80px en conformité avec le CSS
+            var popMargTop = ($('#' + popID).height() + 80) / 2;
+            var popMargLeft = ($('#' + popID).width() + 80) / 2;
+            //Apply Margin to Popup
+            $('#' + popID).css({
+                'margin-top' : -popMargTop,
+                'margin-left' : -popMargLeft
+            });
+            //Apparition du fond - .css({'filter' : 'alpha(opacity=80)'}) pour corriger les bogues d'anciennes versions de IE
+            $('body').append('<div id="fade"></div>');
+            $('#fade').css({'filter' : 'alpha(opacity=80)'}).fadeIn();
+            return false;
+        }
+        function closePopUp() { //Au clic sur le body...
+            $('#fade , .popup_block').fadeOut(function() {
+                $('#fade, a.close').remove();
+            }); //...ils disparaissent ensemble
+            return false;
+        }
+        //------------------------ Tools ------------------------
+        function lancer(fonction) {
+            FunOnload[FunOnload.length] = fonction;
+        }
+        //------------------------ Initialisation ------------------------
+        lancer(create_propositions_table);
+        window.onload = function() {
+            for(var i = 0, longueur = FunOnload.length; i < longueur; i++)
+                FunOnload[i](); // On exécute les fonctions d'initialisation
+
+            jQuery(function($){
+                // Lorsque vous cliquez sur un lien de la classe poplight
+                $('a.poplight').on('click', clickPopLight);
+                // Close Popups and Fade Layer
+                $('body').on('click', 'a.close, #fade', closePopUp);
+            });
+        };
+    </script>
+
+{% endblock %}
+
+
+{% block styles %}
+    <style>
+        #fade { /*--Masque opaque noir de fond--*/
+            display: none; /*--masqué par défaut--*/
+            background: #000;
+            position: fixed; left: 0; top: 0;
+            width: 100%; height: 100%;
+            opacity: .80;
+            z-index: 9999;
+        }
+        .popup_block{
+            display: none; /*--masqué par défaut--*/
+            background: #fff;
+            padding: 20px;
+            border: 20px solid #ddd;
+            float: left;
+            font-size: 1.2em;
+            position: fixed;
+            top: 50%; left: 50%;
+            z-index: 99999;
+            /*--Les différentes définitions de Box Shadow en CSS3--*/
+            -webkit-box-shadow: 0px 0px 20px #000;
+            -moz-box-shadow: 0px 0px 20px #000;
+            box-shadow: 0px 0px 20px #000;
+            /*--Coins arrondis en CSS3--*/
+            -webkit-border-radius: 10px;
+            -moz-border-radius: 10px;
+            border-radius: 10px;
+        }
+        img.btn_close {
+            float: right;
+            margin: -55px -55px 0 0;
+        }
+        /*--Gérer la position fixed pour IE6--*/
+        *html #fade {
+        position: absolute;
+        }
+        *html .popup_block {
+        position: absolute;
+        }
+    </style>
+    <style>
+        .prop_table {
+            display: block;
+            font-family: sans-serif;
+            -webkit-font-smoothing: antialiased;
+            font-size: 115%;
+            overflow: auto;
+            width: 100%;
+            table-layout: fixed;
+        }
+        th {
+            background-color: rgb(112, 196, 105);
+            color: white;
+            font-weight: normal;
+            padding: 20px 30px;
+            text-align: center;
+            font-weight: bold;
+        }
+        td {
+            background-color: rgb(238, 238, 238);
+            color: rgb(111, 111, 111);
+            padding: 2px 3px;
+            text-align: center;
+            border: 3px solid white;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+        }
+        .entity-name{
+            font-weight: bold;
+        }
+        .proposition-type{
+            font-size: 75%;
+            font-style: italic;
+            text-decoration: underline;
+        }
+        .proposition-note{
+            font-size: 75%;
+            font-style: italic;
+            text-decoration: underline;
+        }
+        .link{
+            font-weight: bold;
+        }
+    </style>
+
+{% endblock %}

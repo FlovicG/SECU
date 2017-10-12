@@ -1,0 +1,175 @@
+{% extends "global/Base.html" %}
+{% load staticfiles otree_tags %}
+
+
+{% block title %}
+    Set Offer 0 Page
+{% endblock %}
+
+
+{% block content %}
+    <div class="container-fluid">
+        <p>
+        <div class="row">
+            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12" align="center" style="background-color:bisque;">
+                <div>
+                    <table>
+                        <tr>
+                            <td>
+                                {% if ball1colour == 'rouge' %}
+                                    <span class="glyphicon glyphicon-flash" style="color:red;"></span>
+                                {% else %}
+                                    <span class="glyphicon glyphicon-leaf" style="color:deepskyblue;"></span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if ball2colour == 'rouge' %}
+                                    <span class="glyphicon glyphicon-flash" style="color:red;"></span>
+                                {% else %}
+                                    <span class="glyphicon glyphicon-leaf" style="color:deepskyblue;"></span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if ball3colour == 'rouge' %}
+                                    <span class="glyphicon glyphicon-flash" style="color:red;"></span>
+                                {% else %}
+                                    <span class="glyphicon glyphicon-leaf" style="color:deepskyblue;"></span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if ball4colour == 'rouge' %}
+                                    <span class="glyphicon glyphicon-flash" style="color:red;"></span>
+                                {% else %}
+                                    <span class="glyphicon glyphicon-leaf" style="color:deepskyblue;"></span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if ball5colour == 'rouge' %}
+                                    <span class="glyphicon glyphicon-flash" style="color:red;"></span>
+                                {% else %}
+                                    <span class="glyphicon glyphicon-leaf" style="color:deepskyblue;"></span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if ball6colour == 'rouge' %}
+                                    <span class="glyphicon glyphicon-flash" style="color:red;"></span>
+                                {% else %}
+                                    <span class="glyphicon glyphicon-leaf" style="color:deepskyblue;"></span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if ball7colour == 'rouge' %}
+                                    <span class="glyphicon glyphicon-flash" style="color:red;"></span>
+                                {% else %}
+                                    <span class="glyphicon glyphicon-leaf" style="color:deepskyblue;"></span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if ball8colour == 'rouge' %}
+                                    <span class="glyphicon glyphicon-flash" style="color:red;"></span>
+                                {% else %}
+                                    <span class="glyphicon glyphicon-leaf" style="color:deepskyblue;"></span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if ball9colour == 'rouge' %}
+                                    <span class="glyphicon glyphicon-flash" style="color:red;"></span>
+                                {% else %}
+                                    <span class="glyphicon glyphicon-leaf" style="color:deepskyblue;"></span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if ball10colour == 'rouge' %}
+                                    <span class="glyphicon glyphicon-flash" style="color:red;"></span>
+                                {% else %}
+                                    <span class="glyphicon glyphicon-leaf" style="color:deepskyblue;"></span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><span class="glyphicon glyphicon-refresh"></span></td>
+                            <td><span class="glyphicon glyphicon-refresh"></span></td>
+                            <td><span class="glyphicon glyphicon-refresh"></span></td>
+                            <td><span class="glyphicon glyphicon-refresh"></span></td>
+                            <td><span class="glyphicon glyphicon-refresh"></span></td>
+                            <td><span class="glyphicon glyphicon-refresh"></span></td>
+                            <td><span class="glyphicon glyphicon-refresh"></span></td>
+                            <td><span class="glyphicon glyphicon-refresh"></span></td>
+                            <td><span class="glyphicon glyphicon-refresh"></span></td>
+                            <td><span class="glyphicon glyphicon-refresh"></span></td>
+                        </tr>
+                        <tr></tr>
+                    </table>
+                    <table></table>
+                </div>
+            </div>
+        </div>
+        </p>
+        <p>
+        <div class="row">
+            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12" align="center" style="background-color:beige;">
+            <div id="id_enjeu">Vous pouvez faire une offre pour tenter de: {{enjeu}}</div>
+            </div>
+        </div>
+        </p>
+        <p>
+        <div class="row">
+            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12" align="center" style="background-color:beige;">
+                <div>Votre offre: </div><div id="offer_0_slide" style="max-width: 800px; margin: 0 auto"></div>
+                <input type="hidden" name="offer_0" id="id_offer_0"/>
+                {% next_button %}
+            </div>
+        </div>
+        </p>
+    </div>
+
+{% endblock %}
+
+
+{% block scripts %}
+    <script src="{% static "pain_shock/freshslider/freshslider.min.js" %}"></script>
+    <script>
+        document.getElementById("id_offer_0").value = {{offer_0_float_times100}} / 100;
+        $("#offer_0_slide").freshslider(
+                {
+                    min: 0, max: 1, step: 0.01, value: {{offer_0_float_times100}} / 100,
+                    onchange:function(value){document.getElementById("id_offer_0").value = value;}
+                }
+        );
+    </script>
+{% endblock %}
+
+
+{% block styles %}
+    <link href="{% static "pain_shock/freshslider/freshslider.min.css" %}" rel="stylesheet">
+
+    <style>
+        table { width: 100%; border: 1px solid lightgrey;}
+        td { text-align: center; border: 1px solid lightgrey;}
+
+        .fa-spin-custom, .glyphicon-spin {
+            -webkit-animation: spin 1000ms infinite linear;
+            animation: spin 1000ms infinite linear;
+        }
+        @-webkit-keyframes spin {
+            0% {
+                -webkit-transform: rotate(0deg);
+                transform: rotate(0deg);
+            }
+            100% {
+                -webkit-transform: rotate(359deg);
+                transform: rotate(359deg);
+            }
+        }
+        @keyframes spin {
+            0% {
+                -webkit-transform: rotate(0deg);
+                transform: rotate(0deg);
+            }
+            100% {
+                -webkit-transform: rotate(359deg);
+                transform: rotate(359deg);
+            }
+        }
+    </style>
+{% endblock %}

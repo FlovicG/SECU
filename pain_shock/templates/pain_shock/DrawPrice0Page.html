@@ -1,0 +1,231 @@
+{% extends "global/Base.html" %}
+{% load staticfiles otree_tags %}
+
+{% block title %}
+    Draw Price 0 Page
+{% endblock %}
+
+
+{% block content %}
+    <div class="container-fluid">
+        <p>
+            <div class="row">
+                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12" align="center" style="background-color:bisque;">
+                    <div>
+                        <table>
+                            <tr>
+                                <td>
+                                    {% if ball1colour == 'rouge' %}
+                                        <span class="glyphicon glyphicon-flash" style="color:red;"></span>
+                                    {% else %}
+                                        <span class="glyphicon glyphicon-leaf" style="color:deepskyblue;"></span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if ball2colour == 'rouge' %}
+                                        <span class="glyphicon glyphicon-flash" style="color:red;"></span>
+                                    {% else %}
+                                        <span class="glyphicon glyphicon-leaf" style="color:deepskyblue;"></span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if ball3colour == 'rouge' %}
+                                        <span class="glyphicon glyphicon-flash" style="color:red;"></span>
+                                    {% else %}
+                                        <span class="glyphicon glyphicon-leaf" style="color:deepskyblue;"></span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if ball4colour == 'rouge' %}
+                                        <span class="glyphicon glyphicon-flash" style="color:red;"></span>
+                                    {% else %}
+                                        <span class="glyphicon glyphicon-leaf" style="color:deepskyblue;"></span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if ball5colour == 'rouge' %}
+                                        <span class="glyphicon glyphicon-flash" style="color:red;"></span>
+                                    {% else %}
+                                        <span class="glyphicon glyphicon-leaf" style="color:deepskyblue;"></span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if ball6colour == 'rouge' %}
+                                        <span class="glyphicon glyphicon-flash" style="color:red;"></span>
+                                    {% else %}
+                                        <span class="glyphicon glyphicon-leaf" style="color:deepskyblue;"></span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if ball7colour == 'rouge' %}
+                                        <span class="glyphicon glyphicon-flash" style="color:red;"></span>
+                                    {% else %}
+                                        <span class="glyphicon glyphicon-leaf" style="color:deepskyblue;"></span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if ball8colour == 'rouge' %}
+                                        <span class="glyphicon glyphicon-flash" style="color:red;"></span>
+                                    {% else %}
+                                        <span class="glyphicon glyphicon-leaf" style="color:deepskyblue;"></span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if ball9colour == 'rouge' %}
+                                        <span class="glyphicon glyphicon-flash" style="color:red;"></span>
+                                    {% else %}
+                                        <span class="glyphicon glyphicon-leaf" style="color:deepskyblue;"></span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if ball10colour == 'rouge' %}
+                                        <span class="glyphicon glyphicon-flash" style="color:red;"></span>
+                                    {% else %}
+                                        <span class="glyphicon glyphicon-leaf" style="color:deepskyblue;"></span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td><span class="glyphicon glyphicon-refresh glyphicon-spin"></span></td>
+                                <td><span class="glyphicon glyphicon-refresh glyphicon-spin"></span></td>
+                                <td><span class="glyphicon glyphicon-refresh glyphicon-spin"></span></td>
+                                <td><span class="glyphicon glyphicon-refresh glyphicon-spin"></span></td>
+                                <td><span class="glyphicon glyphicon-refresh glyphicon-spin"></span></td>
+                                <td><span class="glyphicon glyphicon-refresh glyphicon-spin"></span></td>
+                                <td><span class="glyphicon glyphicon-refresh glyphicon-spin"></span></td>
+                                <td><span class="glyphicon glyphicon-refresh glyphicon-spin"></span></td>
+                                <td><span class="glyphicon glyphicon-refresh glyphicon-spin"></span></td>
+                                <td><span class="glyphicon glyphicon-refresh glyphicon-spin"></span></td>
+                            </tr>
+                            <tr></tr>
+                        </table>
+                        <table></table>
+                    </div>
+                </div>
+            </div>
+        </p>
+        <p>
+            <div class="row">
+                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12" align="center" style="background-color:beige;">
+                <div id="id_enjeu">Vous avez fait une offre pour tenter de: {{enjeu}}</div>
+                <div>Cliquez ci-dessous pour lancer le tirage du prix nécessaire à atteindre</div>
+                </div>
+            </div>
+        </p>
+        <p>
+            <div class="row">
+                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12" align="center" style="background-color:beige;">
+                    <div>Votre offre: </div><div id="offer_0_slide" style="max-width: 800px; margin: 0 auto"></div>
+                    <div>
+                        <span id="id_tirage"></span>
+                        <b><span id="id_drawing_result"></span></b>
+                        <span id="id_commentaires_tirage"></span>
+                    </div>
+                    <div id="id_résultats"></div>
+                    <div>
+                        <button id="id_draw_button" type="button" class="btn btn-default" style="visibility: visible">
+                            <span id="id_glyphicon_drawing" class="glyphicon glyphicon-refresh"></span>
+                            <span id="id_button_text">Lancer le tirage au sort</span>
+                        </button>
+                    </div>
+                    <input type="hidden" name="price_0" id="id_price_0"/>
+                    <div id="id_next_button" style="visibility: hidden">{% next_button %}</div>
+                </div>
+            </div>
+        </p>
+    </div>
+
+{% endblock %}
+
+
+{% block scripts %}
+    <script src="{% static "pain_shock/freshslider/freshslider.min.js" %}"></script>
+    <script>
+        var offer_0_var = {{offer_0_float_times100}}/100;
+        var price_0_var = 0;
+        $("#offer_0_slide").freshslider(
+                {
+                    min: 0, max: 1, step: 0.01, value: offer_0_var, enabled:false,
+                    onchange:function(value){}
+                }
+        );
+
+        function show_drawing() {
+            // Draw a random price between 0 and 1
+            price_0_var = Math.random();
+            price_0_var = Math.round(price_0_var*100)/100;
+            document.getElementById("id_price_0").value = price_0_var;
+            // Inform the player of the result
+            document.getElementById("id_tirage").innerHTML = "Le prix tiré au sort est: ";
+            document.getElementById("id_drawing_result").innerHTML = price_0_var;
+            document.getElementById("id_glyphicon_drawing").style.visibility = "hidden";
+            document.getElementById("id_button_text").innerHTML = "Appliquer le résultat du tirage au sort";
+            document.getElementById("id_glyphicon_drawing").className += "glyphicon glyphicon-refresh";
+            if (price_0_var > offer_0_var)
+            {
+                document.getElementById("id_commentaires_tirage").innerHTML = "Aïe aïe aïe aïe!!!";
+            }
+            else
+            {
+                document.getElementById("id_commentaires_tirage").innerHTML = "Oooouuuuuufffff...";
+            }
+            // Allow the player to get to the next page
+            document.getElementById("id_draw_button").style.visibility = "hidden";
+            document.getElementById("id_next_button").style.visibility = "visible";
+        }
+
+        $("#id_draw_button").click(function () {
+            document.getElementById("id_glyphicon_drawing").className += "glyphicon glyphicon-refresh glyphicon-spin";
+            var x = setTimeout(show_drawing, 1000);
+        });
+    </script>
+
+{% endblock %}
+
+
+{% block styles %}
+    <link href="{% static "pain_shock/freshslider/freshslider.min.css" %}" rel="stylesheet">
+
+    <style>
+        table { width: 100%; border: 1px solid lightgrey;}
+        td { text-align: center; border: 1px solid lightgrey;}
+
+        .fa-spin-custom, .glyphicon-spin {
+            -webkit-animation: spin 1000ms infinite linear;
+            animation: spin 1000ms infinite linear;
+        }
+        @-webkit-keyframes spin {
+            0% {
+                -webkit-transform: rotate(0deg);
+                transform: rotate(0deg);
+            }
+            100% {
+                -webkit-transform: rotate(359deg);
+                transform: rotate(359deg);
+            }
+        }
+        @keyframes spin {
+            0% {
+                -webkit-transform: rotate(0deg);
+                transform: rotate(0deg);
+            }
+            100% {
+                -webkit-transform: rotate(359deg);
+                transform: rotate(359deg);
+            }
+        }
+    </style>
+{% endblock %}
+

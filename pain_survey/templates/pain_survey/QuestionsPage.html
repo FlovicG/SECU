@@ -1,0 +1,22 @@
+{% extends "global/Base.html" %}
+{% load staticfiles otree_tags %}
+
+{% block title %}
+    Questionnaire
+{% endblock %}
+
+{% block content %}
+
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12" align="center" style="background-color:white;">
+                {% formfield player.firstname %}
+                {% formfield player.surname %}
+                {% formfield player.sex %}
+                {% formfield player.school %}
+                {% next_button %}
+            </div>
+        </div>
+    </div>
+
+{% endblock %}

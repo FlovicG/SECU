@@ -1,0 +1,290 @@
+{% extends "global/Base.html" %}
+{% load staticfiles otree_tags %}
+
+{% block title %}
+    Draw Balls Page
+{% endblock %}
+
+
+{% block content %}
+    <div class="container-fluid">
+        <p>
+            <div class="row">
+                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12" align="center" style="background-color:bisque;">
+                    <div>
+                        <table>
+                            <tr style="background-color:lightgrey;">
+                                <td>
+                                    {% if ball1colour == 'rouge' %}
+                                        <span class="glyphicon glyphicon-flash" style="color:grey; text-decoration:line-through;"></span>
+                                    {% else %}
+                                        <span class="glyphicon glyphicon-leaf" style="color:grey; text-decoration:line-through;"></span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if ball2colour == 'rouge' %}
+                                        <span class="glyphicon glyphicon-flash" style="color:grey; text-decoration:line-through;"></span>
+                                    {% else %}
+                                        <span class="glyphicon glyphicon-leaf" style="color:grey; text-decoration:line-through;"></span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if ball3colour == 'rouge' %}
+                                        <span class="glyphicon glyphicon-flash" style="color:grey; text-decoration:line-through;"></span>
+                                    {% else %}
+                                        <span class="glyphicon glyphicon-leaf" style="color:grey; text-decoration:line-through;"></span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if ball4colour == 'rouge' %}
+                                        <span class="glyphicon glyphicon-flash" style="color:grey; text-decoration:line-through;"></span>
+                                    {% else %}
+                                        <span class="glyphicon glyphicon-leaf" style="color:grey; text-decoration:line-through;"></span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if ball5colour == 'rouge' %}
+                                        <span class="glyphicon glyphicon-flash" style="color:grey; text-decoration:line-through;"></span>
+                                    {% else %}
+                                        <span class="glyphicon glyphicon-leaf" style="color:grey; text-decoration:line-through;"></span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if ball6colour == 'rouge' %}
+                                        <span class="glyphicon glyphicon-flash" style="color:grey; text-decoration:line-through;"></span>
+                                    {% else %}
+                                        <span class="glyphicon glyphicon-leaf" style="color:grey; text-decoration:line-through;"></span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if ball7colour == 'rouge' %}
+                                        <span class="glyphicon glyphicon-flash" style="color:grey; text-decoration:line-through;"></span>
+                                    {% else %}
+                                        <span class="glyphicon glyphicon-leaf" style="color:grey; text-decoration:line-through;"></span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if ball8colour == 'rouge' %}
+                                        <span class="glyphicon glyphicon-flash" style="color:grey; text-decoration:line-through;"></span>
+                                    {% else %}
+                                        <span class="glyphicon glyphicon-leaf" style="color:grey; text-decoration:line-through;"></span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if ball9colour == 'rouge' %}
+                                        <span class="glyphicon glyphicon-flash" style="color:grey; text-decoration:line-through;"></span>
+                                    {% else %}
+                                        <span class="glyphicon glyphicon-leaf" style="color:grey; text-decoration:line-through;"></span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if ball10colour == 'rouge' %}
+                                        <span class="glyphicon glyphicon-flash" style="color:grey; text-decoration:line-through;"></span>
+                                    {% else %}
+                                        <span class="glyphicon glyphicon-leaf" style="color:grey; text-decoration:line-through;"></span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    {% if ball1aftercolour == 'rouge' %}
+                                        <span class="glyphicon glyphicon-flash" style="color:red;"></span>
+                                    {% else %}
+                                        <span class="glyphicon glyphicon-leaf" style="color:deepskyblue;"></span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if ball2aftercolour == 'rouge' %}
+                                        <span class="glyphicon glyphicon-flash" style="color:red;"></span>
+                                    {% else %}
+                                        <span class="glyphicon glyphicon-leaf" style="color:deepskyblue;"></span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if ball3aftercolour == 'rouge' %}
+                                        <span class="glyphicon glyphicon-flash" style="color:red;"></span>
+                                    {% else %}
+                                        <span class="glyphicon glyphicon-leaf" style="color:deepskyblue;"></span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if ball4aftercolour == 'rouge' %}
+                                        <span class="glyphicon glyphicon-flash" style="color:red;"></span>
+                                    {% else %}
+                                        <span class="glyphicon glyphicon-leaf" style="color:deepskyblue;"></span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if ball5aftercolour == 'rouge' %}
+                                        <span class="glyphicon glyphicon-flash" style="color:red;"></span>
+                                    {% else %}
+                                        <span class="glyphicon glyphicon-leaf" style="color:deepskyblue;"></span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if ball6aftercolour == 'rouge' %}
+                                        <span class="glyphicon glyphicon-flash" style="color:red;"></span>
+                                    {% else %}
+                                        <span class="glyphicon glyphicon-leaf" style="color:deepskyblue;"></span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if ball7aftercolour == 'rouge' %}
+                                        <span class="glyphicon glyphicon-flash" style="color:red;"></span>
+                                    {% else %}
+                                        <span class="glyphicon glyphicon-leaf" style="color:deepskyblue;"></span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if ball8aftercolour == 'rouge' %}
+                                        <span class="glyphicon glyphicon-flash" style="color:red;"></span>
+                                    {% else %}
+                                        <span class="glyphicon glyphicon-leaf" style="color:deepskyblue;"></span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if ball9aftercolour == 'rouge' %}
+                                        <span class="glyphicon glyphicon-flash" style="color:red;"></span>
+                                    {% else %}
+                                        <span class="glyphicon glyphicon-leaf" style="color:deepskyblue;"></span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if ball10aftercolour == 'rouge' %}
+                                        <span class="glyphicon glyphicon-flash" style="color:red;"></span>
+                                    {% else %}
+                                        <span class="glyphicon glyphicon-leaf" style="color:deepskyblue;"></span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            <tr id="id_drawing_raw">
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                            <tr></tr>
+                        </table>
+                        <table></table>
+                    </div>
+                    <div>
+                        <button id="id_draw_button" type="button" class="btn btn-default">
+                            <span id="id_glyphicon_drawing" class="glyphicon glyphicon-arrow-up"></span>
+                            <span id="id_button_text">Lancer le tirage au sort</span>
+                        </button>
+                    </div
+                </div>
+            </div>
+        </p>
+        <p>
+            <div class="row">
+                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12" align="center" style="background-color:beige;">
+                    <div>Cliquez ci-dessus pour lancer le tirage des boules</div>
+                </div>
+            </div>
+        </p>
+        <p>
+            <div class="row">
+                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12" align="center" style="background-color:beige;">
+                    <div>Votre offre: </div><div id="offer_0_slide" style="max-width: 800px; margin: 0 auto"></div>
+                    <div>
+                        <span id="id_tirage">Le prix tiré au sort est: </span>
+                        <b><span id="id_drawing_result"></span>price_0</b>
+                        <span id="id_commentaires_tirage"></span>
+                    </div>
+                    <div id="id_résultats"></div>
+                    <div id="id_next_button" style="visibility: hidden">{% next_button %}</div>
+                </div>
+            </div>
+        </p>
+    </div>
+
+{% endblock %}
+
+
+{% block scripts %}
+    <script src="{% static "pain_shock/freshslider/freshslider.min.js" %}"></script>
+    <script>
+        var offer_0_var = {{offer_0_float_times100}}/100;
+        var price_0_var = 0;
+        $("#offer_0_slide").freshslider(
+                {
+                    min: 0, max: 1, step: 0.01, value: offer_0_var, enabled:false,
+                    onchange:function(value){}
+                }
+        );
+
+        function show_drawing() {
+            var ball_position_drawn = {{player.ball_position_drawn}}
+            var give_shock = {{player.give_shock}}
+            // Set the result in the cell
+            var randomtd = $('#id_drawing_raw td').eq( ball_position_drawn );
+            if ( give_shock == 1 )
+            {
+                randomtd.text("Result").css({color:'#DDD'});
+                randomtd.text("Shock").css({color:'#DDD'});
+                randomtd.css( "background-color", "red" );
+            }
+            else
+            {
+                randomtd.text("Result").css({color:'#DDD'});
+                randomtd.text("No Shock").css({color:'#DDD'});
+                randomtd.css( "background-color", "green" );
+            }
+            // Stop the "drawing animation"
+            document.getElementById("id_glyphicon_drawing").className += "glyphicon glyphicon-refresh";
+            document.getElementById("id_next_button").style.visibility = "visible";
+            // Allow the player to get to the next page
+            document.getElementById("id_draw_button").style.visibility = "hidden";
+            document.getElementById("id_next_button").style.visibility = "visible";
+        }
+
+        $("#id_draw_button").click(function () {
+            document.getElementById("id_glyphicon_drawing").className += "glyphicon glyphicon-refresh glyphicon-spin";
+            var x = setTimeout(show_drawing, 1000);
+        });
+    </script>
+
+{% endblock %}
+
+
+{% block styles %}
+    <link href="{% static "pain_shock/freshslider/freshslider.min.css" %}" rel="stylesheet">
+
+    <style>
+        table { width: 100%; border: 1px solid lightgrey;}
+        td { text-align: center; border: 1px solid lightgrey;}
+
+        .fa-spin-custom, .glyphicon-spin {
+            -webkit-animation: spin 1000ms infinite linear;
+            animation: spin 1000ms infinite linear;
+        }
+        @-webkit-keyframes spin {
+            0% {
+                -webkit-transform: rotate(0deg);
+                transform: rotate(0deg);
+            }
+            100% {
+                -webkit-transform: rotate(359deg);
+                transform: rotate(359deg);
+            }
+        }
+        @keyframes spin {
+            0% {
+                -webkit-transform: rotate(0deg);
+                transform: rotate(0deg);
+            }
+            100% {
+                -webkit-transform: rotate(359deg);
+                transform: rotate(359deg);
+            }
+        }
+    </style>
+{% endblock %}
+

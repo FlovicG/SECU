@@ -1,0 +1,32 @@
+{% extends "global/Base.html" %}
+{% load staticfiles otree_tags %}
+
+{% block title %}
+    <meta http-equiv="Refresh" content="3">
+    Shock Experimenter Page
+{% endblock %}
+
+{% block content %}
+
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12" align="center" style="background-color:white;">
+                game_played: {{game_played}}<br>
+                offer_0: {{offer_0}}<br>
+                price_0: {{price_0}}<br>
+                balls_before_draw: {{balls_before_draw}}<br>
+                balls_after_draw: {{balls_after_draw}}<br>
+                ball_position_draw: {{ball_position_drawn}}<br>
+                give_shock: {{give_shock}}<br>
+            </div>
+        </div>
+    </div>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12" align="center" style="background-color:white;">
+                {% next_button %}
+            </div>
+        </div>
+    </div>
+
+{% endblock %}

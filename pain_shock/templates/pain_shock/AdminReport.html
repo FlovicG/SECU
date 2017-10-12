@@ -1,0 +1,24 @@
+{% extends "global/Page.html" %}
+{% load staticfiles otree_tags %}
+
+{% block title %}
+    Admin Report
+{% endblock %}
+
+{% block content %}
+    <p>Here is the sorted list of payoffs in round {{ subsession.round_number }}</p>
+
+    <ul>
+        {% for payoff in payoffs %}
+            <li>{{ payoff }}</li>
+        {% endfor %}
+    </ul>
+
+{% endblock %}
+
+
+{% block scripts %}
+{% endblock %}
+
+{% block styles %}
+{% endblock %}

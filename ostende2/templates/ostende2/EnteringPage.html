@@ -1,0 +1,159 @@
+{% extends "global/Page.html" %}
+{% load staticfiles otree_tags %}
+
+
+{% block title %}
+
+    <div align="center">
+        {{ entite }}
+        <br>
+        <i>Entrez vos propositions</i>
+    </div>
+
+{% endblock %}
+
+
+{% block content %}
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12" align="center">
+
+                <div id="id_propositions">
+                    {{ proposition_formset.management_form }}
+                    {% for type, form in proposition_types_and_forms %}
+                        {{ form }}
+                    {% endfor %}
+                </div>
+
+                <div>
+                    <table id="id_propositions_table" class="prop_table">
+                        <tr>
+                            <th>
+                                <b>Entité</b>
+                            </th>
+                            <th>
+                                <b>Vision</b>
+                            </th>
+                            <th>
+                                <b>Quick-Win</b><br>
+                                <span style="font-size: 0.8em;"><i>peu de moyens, gains importants</i></span>
+                            </th>
+                            <th>
+                                <b>Objectif majeur de transformation</b><br>
+                                <span style="font-size: 0.8em;"><i>beaucoup de moyens, gains importants</i></span>
+                            </th>
+                        </tr>
+                        <tr>
+                            <td>
+                                {{ entite }}
+                            </td>
+                            <td>
+                                <textarea id="id_form-0-text" name="form-0-text"
+                                          cols="30" rows="12"
+                                          type="text" value="Prop-Vision Entité-1"></textarea>
+                            </td>
+                            <td>
+                                <textarea id="id_form-1-text" name="form-1-text"
+                                          cols="30" rows="12"
+                                          type="text" value="Prop-Quick-Wins Entité-1"></textarea>
+                            </td>
+                            <td>
+                                <textarea id="id_form-2-text" name="form-2-text"
+                                          cols="30" rows="12"
+                                          type="text" value="Prop-Bifurcation Entité-1"></textarea>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                ICL
+                            </td>
+                            <td>
+                                <textarea id="id_form-3-text" name="form-3-text"
+                                          cols="30" rows="12"
+                                          type="text" value="Prop-Vision ICL-1"></textarea>
+                            </td>
+                            <td>
+                                <textarea id="id_form-4-text" name="form-4-text"
+                                          cols="30" rows="12"
+                                          type="text" value="Prop-Quick-Wins ICL-1"></textarea>
+                            </td>
+                            <td>
+                                <textarea id="id_form-5-text" name="form-5-text"
+                                          cols="30" rows="12"
+                                          type="text" value="Prop-Bifurcation ICL-1"></textarea>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+
+                <br><br><br>
+
+                <table id="id_buttons_table">
+                    <td id="id_validatebtn_cell">
+                        <button id="id_validatebtn" type="button" class="btn btn-default">Valider</button>
+                    </td>
+                    <td id="id_nextbtn_cell">
+                        <div id="id_next_button_div" style="visibility: hidden">{% next_button %}</div>
+                    </td>
+                </table>
+
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+
+{% block scripts %}
+    <script>
+    $("#id_validatebtn_cell").click(function() {
+        if (document.getElementById("id_next_button_div").style.visibility == 'visible')
+        {
+            document.getElementById("id_next_button_div").style = "visibility:hidden;";
+        }
+        else
+        {
+            document.getElementById("id_next_button_div").style = "visibility:visible;";
+        }
+    });
+    </script>
+{% endblock %}
+
+
+{% block styles %}
+    <style>
+        .prop_table {
+            display: block;
+            font-family: sans-serif;
+            -webkit-font-smoothing: antialiased;
+            font-size: 115%;
+            overflow: auto;
+            width: auto;
+        }
+        th {
+            background-color: rgb(112, 196, 105);
+            color: white;
+            font-weight: normal;
+            padding: 20px 30px;
+            text-align: center;
+        }
+        td {
+            background-color: rgb(238, 238, 238);
+            color: rgb(111, 111, 111);
+            padding: 2px 3px;
+        }
+    </style>
+    <style>
+        #id_buttons_table{
+            width: 100%;
+        }
+        #id_validatebtn_cell {
+            text-align: left;
+            background-color: "white";
+            color: "white";
+        }
+        #id_nextbtn_cell {
+            text-align: right;
+        }
+    </style>
+
+{% endblock %}

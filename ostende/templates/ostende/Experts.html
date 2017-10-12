@@ -1,0 +1,52 @@
+{% extends "global/Page.html" %}
+{% load staticfiles otree_tags %}
+
+{% block title %}
+    Experts' page
+{% endblock %}
+
+{% block content %}
+
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12" align="justify" style="background-color:white;">
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12" align="justify" style="background-color:white;">
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block scripts %}
+    <script>
+        window.onload = function() {
+            var ws_scheme = window.location.protocol == "https:" ? "wss" : "ws";
+            var socket = new WebSocket(ws_scheme + '://' + window.location.host + "/ostende/expertchannel");
+
+            // Handle any errors that occur.
+            socket.onerror = function(error) {
+                console.log('WebSocket Error: ' + error);
+            };
+
+            // Show a connected message when the WebSocket is opened.
+            socket.onopen = function(event) {
+                console.log('connected to oTree');
+            };
+
+            // Handle messages sent by the server.
+            socket.onmessage = function(event) {
+            };
+
+            // Show a disconnected message when the WebSocket is closed.
+            socket.onclose = function(event) {
+                console.log('disconnected from oTree');
+            };
+        }
+    </script>
+{% endblock %}
+
+{% block styles %}
+{% endblock %}

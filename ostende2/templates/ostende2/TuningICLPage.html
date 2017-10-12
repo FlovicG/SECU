@@ -1,0 +1,329 @@
+{% extends "global/Page.html" %}
+{% load staticfiles otree_tags %}
+{% load otreechat %}
+
+
+{% block title %}
+    <div align="center">
+        {{ entite }}
+        <br>
+        <i>Affinez vos propositions</i>
+    </div>
+{% endblock %}
+
+
+{% block content %}
+
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12" align="center">
+                <p>
+                     <div>
+                        <table id="id_propositions_table" class="prop_table">
+                        <tr>
+                            <th>
+                                Entité
+                            </th>
+                            <th>
+                                Vision
+                            </th>
+                            <th>
+                                <b>Quick-Win</b><br>
+                                <span style="font-size: 0.8em;"><i>peu de moyens, gains importants</i></span>
+                            </th>
+                            <th>
+                                <b>Objectif majeur de transformation</b><br>
+                                <span style="font-size: 0.8em;"><i>beaucoup de moyens, gains importants</i></span>
+                            </th>
+                        </tr>
+                        </table>
+                    </div>
+                </p>
+                <p>
+                    {{ proposition_formset.management_form }}
+                    {% for type, form in proposition_types_and_forms %}
+                        {{ form }}
+                    {% endfor %}
+
+                    <br><br><br>
+
+                    {% chat nickname=entite %}
+
+                    <br><br><br>
+
+                    <table id="id_buttons_table">
+                        <td id="id_validatebtn_cell">
+                            <button id="id_validatebtn" type="button" class="btn btn-default">Valider</button>
+                        </td>
+                        <td id="id_nextbtn_cell">
+                            <div id="id_next_button_div" style="visibility: hidden">{% next_button %}</div>
+                        </td>
+                    </table>
+
+                </p>
+            </div>
+        </div>
+    </div>
+
+<!--
+    <div id="id_test">TEST</div>
+    <div id="id_test2">TEST</div>
+    <div id="id_test3">TEST</div>
+-->
+
+{% endblock %}
+
+
+{% block scripts %}
+    <script>
+    $("#id_validatebtn_cell").click(function() {
+        if (document.getElementById("id_next_button_div").style.visibility == 'visible')
+        {
+            document.getElementById("id_next_button_div").style = "visibility:hidden;";
+        }
+        else
+        {
+            document.getElementById("id_next_button_div").style = "visibility:visible;";
+        }
+    });
+    </script>
+
+    <script>
+        var FunOnload = new Array();
+        var icl_propositions = {{ allicl_propositions | json }};
+        var icl_appreciations = {{ allicl_appreciations | json }};
+        var prop_pk_formids = {{ propositions_pk_formsid | json }};
+        //-------------------------------------------------------
+        function create_simplecell(ligne, colonne, row, prop){
+            // Colonne "entité"
+            cell = document.createElement("td");
+            var DOM_span = document.createElement("span");
+            DOM_span.id = "id_entite_" + (ligne+colonne);
+            DOM_span.name = "entite";
+            DOM_span.innerHTML = "ICL,<br>\npar " + prop.entite;
+            cell.appendChild(DOM_span);
+            row.appendChild(cell);
+        }
+
+        //-------------------------------------------------------
+        function create_clickablecell(ligne, colonne, row, prop){
+            cell = document.createElement("td");
+            var DOM_link = document.createElement("a");
+            DOM_link.id = "id_link_" + (ligne+colonne);
+            DOM_link.name = "link";
+            DOM_link.setAttribute('href', "#");
+            DOM_link.setAttribute('width', "500");
+            DOM_link.setAttribute('data-rel', "popup" + prop.prop_pk);
+            DOM_link.setAttribute('class', "poplight");
+            DOM_link.innerHTML = "voir les commentaires";
+
+            var DOM_br = document.createElement("BR");
+            var DOM_span = document.createElement("span");
+            DOM_span.id = "id_proposition_" + prop.prop_pk;
+            DOM_span.name = "proposition";
+            DOM_span.style.color = "black";
+            DOM_span.innerHTML = prop.text;
+            cell.appendChild(DOM_link);
+            cell.appendChild(DOM_br);
+            cell.appendChild(DOM_span);
+            row.appendChild(cell);
+
+            //-------------------------------------------------------------
+            // Create the popup to see the appreciations for this proposition
+            var popup = document.createElement("div");
+            popup.id = "popup" + prop.prop_pk;
+            popup.setAttribute('class', "popup_block");
+            for(var i=0;i<icl_appreciations.length;i++){
+                var app = icl_appreciations[i];
+                if (app.prop_pk == prop.prop_pk){
+                    var popupnote = document.createElement("span");
+                    popupnote.setAttribute('class', "appreciation-note");
+                    popupnote.innerHTML = "Note: " + app.note;
+                    var popuptext = document.createElement("span");
+                    popuptext.setAttribute('class', "appreciation-text");
+                    popuptext.innerHTML = app.reaction;
+                    var popupseparation = document.createElement("span");
+                    popupseparation.innerHTML = "-------------------------------------";
+                    var DOM_br = document.createElement("BR");
+                    var DOM_br2 = document.createElement("BR");
+                    var DOM_br3 = document.createElement("BR");
+                    popup.appendChild(popupseparation);
+                    popup.appendChild(DOM_br);
+//???                    popup.appendChild(popupnote);
+//???                    popup.appendChild(DOM_br2);
+                    popup.appendChild(popuptext);
+                    popup.appendChild(DOM_br3);
+                }
+            }
+            document.body.appendChild(popup);
+        }
+        function create_propositions_table(){
+            tabBody = document.getElementById("id_propositions_table");
+            var nb_lines = icl_propositions.length / 3;
+            // Pour chaque ligne
+            for(var i=0; i<nb_lines; i++){
+                row=document.createElement("tr");
+                //-------------------------------
+                prop = icl_propositions.pop();
+                // Colonnes "entité" et "type Vision"
+                create_simplecell(i, 0, row, prop);
+                create_clickablecell(i, 1, row, prop);
+                //-------------------------------
+                // Colonne "type Quick-wins"
+                prop = icl_propositions.pop();
+                create_clickablecell(i, 2, row, prop);
+                //-------------------------------
+                // Colonne "type Long-terme"
+                prop = icl_propositions.pop();
+                create_clickablecell(i, 3, row, prop);
+                //-------------------------------
+                tabBody.appendChild(row);
+            }
+        }
+        //-------------------------------------------------------
+        //-------------------------------------------------------
+        function clickPopLight() {
+            var popID = $(this).data('rel'); //Trouver la pop-up correspondante
+            var popWidth = $(this).data('width'); //Trouver la largeur
+            //Faire apparaitre la pop-up et ajouter le bouton de fermeture
+            $('#' + popID).fadeIn().css({ 'width': popWidth}).prepend('<a href="#" class="close"><img src="{% static "ostende2/close_pop.png" %}" class="btn_close" title="Close Window" alt="Close" /></a>');
+            //Récupération du margin, qui permettra de centrer la fenêtre - on ajuste de 80px en conformité avec le CSS
+            var popMargTop = ($('#' + popID).height() + 80) / 2;
+            var popMargLeft = ($('#' + popID).width() + 80) / 2;
+            //Apply Margin to Popup
+            $('#' + popID).css({
+                'margin-top' : -popMargTop,
+                'margin-left' : -popMargLeft
+            });
+            //Apparition du fond - .css({'filter' : 'alpha(opacity=80)'}) pour corriger les bogues d'anciennes versions de IE
+            $('body').append('<div id="fade"></div>');
+            $('#fade').css({'filter' : 'alpha(opacity=80)'}).fadeIn();
+            return false;
+        }
+        function closePopUp() { //Au clic sur le body...
+            $('#fade , .popup_block').fadeOut(function() {
+                $('#fade, a.close').remove();
+            }); //...ils disparaissent ensemble
+            return false;
+        }
+        //------------------------ Tools ------------------------
+        function lancer(fonction) {
+            FunOnload[FunOnload.length] = fonction;
+        }
+        //------------------------ Initialisation ------------------------
+        lancer(create_propositions_table);
+        window.onload = function() {
+            for(var i = 0, longueur = FunOnload.length; i < longueur; i++)
+                FunOnload[i](); // On exécute les fonctions d'initialisation
+
+            jQuery(function($){
+                // Lorsque vous cliquez sur un lien de la classe poplight
+                $('a.poplight').on('click', clickPopLight);
+                //Close Popups and Fade Layer
+                $('body').on('click', 'a.close, #fade', closePopUp);
+            });
+        };
+    </script>
+{% endblock %}
+
+
+{% block styles %}
+    <style>
+        #fade { /*--Masque opaque noir de fond--*/
+            display: none; /*--masqué par défaut--*/
+            background: #000;
+            position: fixed; left: 0; top: 0;
+            width: 100%; height: 100%;
+            opacity: .80;
+            z-index: 9999;
+        }
+        .popup_block{
+            display: none; /*--masqué par défaut--*/
+            background: #fff;
+            padding: 20px;
+            border: 20px solid #ddd;
+            float: left;
+            font-size: 1.2em;
+            position: fixed;
+            top: 50%; left: 50%;
+            z-index: 99999;
+            /*--Les différentes définitions de Box Shadow en CSS3--*/
+            -webkit-box-shadow: 0px 0px 20px #000;
+            -moz-box-shadow: 0px 0px 20px #000;
+            box-shadow: 0px 0px 20px #000;
+            /*--Coins arrondis en CSS3--*/
+            -webkit-border-radius: 10px;
+            -moz-border-radius: 10px;
+            border-radius: 10px;
+        }
+        img.btn_close {
+            float: right;
+            margin: -55px -55px 0 0;
+        }
+        /*--Gérer la position fixed pour IE6--*/
+        *html #fade {
+        position: absolute;
+        }
+        *html .popup_block {
+        position: absolute;
+        }
+    </style>
+    <style>
+        .prop_table {
+            display: block;
+            font-family: sans-serif;
+            -webkit-font-smoothing: antialiased;
+            font-size: 115%;
+            overflow: auto;
+            width: 100%;
+            table-layout: fixed;
+        }
+        th {
+            background-color: rgb(112, 196, 105);
+            color: white;
+            font-weight: normal;
+            padding: 20px 30px;
+            text-align: center;
+            font-weight: bold;
+        }
+        td {
+            background-color: rgb(238, 238, 238);
+            color: rgb(111, 111, 111);
+            padding: 2px 3px;
+            text-align: center;
+            border: 3px solid white;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+        }
+        .entity-name{
+            font-weight: bold;
+        }
+        .proposition-type{
+            font-size: 75%;
+            font-style: italic;
+            text-decoration: underline;
+        }
+        .proposition-note{
+            font-size: 75%;
+            font-style: italic;
+            text-decoration: underline;
+        }
+        .link{
+            font-weight: bold;
+        }
+    </style>
+    <style>
+        #id_buttons_table{
+            width: 100%;
+        }
+        #id_validatebtn_cell {
+            text-align: left;
+            background-color: "white";
+            color: "white";
+        }
+        #id_nextbtn_cell {
+            text-align: right;
+        }
+    </style>
+
+{% endblock %}
