@@ -1,0 +1,50 @@
+{% extends "global/Base.html" %}
+{% load staticfiles otree_tags %}
+
+{% block title %}
+    <h1 style="text-align: center;">Jeu, période {{subsession.round_number}}</h1>
+{% endblock %}
+
+{% block content %}
+    <div class="container-fluid">
+        {% if subsession.round_number == 1 %}
+            <div class="row">
+                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12" align="center" style="background-color:whitesmoke;">
+                </div>
+                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12" align="center" style="background-color:whitesmoke;">
+                    <p>
+                    <div id="id_contribution" visibility: visible;">
+                        {% formfield player.contribution with label="Vous devez décider du montant que vous voulez mettre sur le <u>compte collectif</u>" %}
+                        <p>
+                            <input class="btn btn-primary btn-large btn-primary next-button" type="submit" value="Valider" />
+                        </p>
+                    </div>
+                    </p>
+                </div>
+            </div>
+        {% else %}
+            <div class="row">
+                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12" align="center" style="background-color:whitesmoke;">
+                    <p>
+                        Lors de la période {{subsession.round_number|add:"-1"}}, la moyenne des contributions dans votre groupe était de
+                        <b>{{lastcontribution_average|c}}</b><br>
+                        Vous avez contribué de <b>{{my_lastcontribution|c}}</b><br>
+                        Vous avez gagné au total:<br>
+                        <b>{{individual_share}} + {{individual_kept}} = {{individual_payoff}}</b>
+                    </p>
+                </div>
+                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12" align="center" style="background-color:whitesmoke;">
+                    <p>
+                    <div id="id_contribution" style="visibility: visible;">
+                        Jouez la période {{subsession.round_number}}<br>
+                        {% formfield player.contribution with label="Vous devez décider du montant que vous voulez mettre sur le <u>compte collectif</u>" %}
+                        <p>
+                            <input class="btn btn-primary btn-large btn-primary next-button" type="submit" value="Valider" />
+                        </p>
+                    </div>
+                    </p>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+{% endblock %}

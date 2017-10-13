@@ -1,0 +1,38 @@
+{% extends "global/Base.html" %}
+{% load staticfiles otree_tags %}
+
+{% block title %}
+  <h1 align="center">Instructions générales</h1>
+{% endblock %}
+
+{% block content %}
+
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12" align="center" style="background-color:whitesmoke;">
+        <p>
+          Vous allez prendre part à une expérience<br>
+          Cette expérience consiste en un jeu d'interaction au travers d'une succession de pages
+        </p>
+      </div>
+      <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12" align="center" style="background-color:whitesmoke;">
+        <p>
+          Pour passer d'une page à l'autre, vous pouvez cliquer sur le bouton "Valider"
+        </p>
+        <p>
+          <input class="btn btn-primary btn-large btn-primary next-button" type="submit" value="Valider" />
+        </p>
+      </div>
+      <!-- <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12" align="center" style="background-color:whitesmoke;">
+        <p>
+          <div><small>
+            Afin de pouvoir vous repositionner en cas de déconnexion sur la page à laquelle vous étiez arrivé(e),
+            le logiciel installe un cookie indiquant l’adresse de cette page. L’information est conservée 5 {{hours}}
+            et ne fait par ailleurs l’objet d’aucun traitement.
+          </small></div>
+        </p>
+      </div> -->
+    </div>
+  </div>
+
+{% endblock %}
